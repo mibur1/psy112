@@ -1,0 +1,7 @@
+# Files
+*README.md
+*.pyc
+
+# Folders
+_build/
+.conda/
