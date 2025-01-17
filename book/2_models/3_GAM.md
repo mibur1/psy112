@@ -15,7 +15,6 @@ myst:
     ref_test: 1
 ---
 
-# <i class="fa-solid fa-handshake"></i> Bias-Variance Tradeoff
+# <i class="fa-solid fa-circle-plus"></i> Generalized Additive Models
 
-
-
+hello world

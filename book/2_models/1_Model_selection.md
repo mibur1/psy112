@@ -15,6 +15,6 @@ myst:
     ref_test: 1
 ---
 
-# <i class="fas fa-book fa-fw"></i> Model selection
+# <i class="fa-brands fa-python"></i> Model Selection
 
 hello world

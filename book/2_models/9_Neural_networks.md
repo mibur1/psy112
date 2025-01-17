@@ -15,7 +15,6 @@ myst:
     ref_test: 1
 ---
 
-# <i class="fa-solid fa-handshake"></i> Bias-Variance Tradeoff
+# <i class="fa-solid fa-brain"></i> Neural Networks
 
-
-
+hello world

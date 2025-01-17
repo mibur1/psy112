@@ -15,6 +15,6 @@ myst:
     ref_test: 1
 ---
 
-# <i class="fas fa-book fa-fw"></i> Regularization
+# <i class="fa-solid fa-arrows-to-dot"></i> K-Nearest Neighbors
 
 hello world

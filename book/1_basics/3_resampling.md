@@ -15,6 +15,6 @@ myst:
     ref_test: 1
 ---
 
-# <i class="fas fa-book fa-fw"></i> Resampling strategies
+# <i class="fa-solid fa-dice"></i> Resampling Strategies
 
 hello world
