@@ -12,8 +12,17 @@ kernelspec:
   name: python3
 ---
 
-# Welcome to psy112!
+# <i class="fas fa-hand-sparkles fa-fw"></i> Welcome to psy112!
 
-**NOTE: WORK IN PROGRESS**
+This book contains the course contents for the Statistical Learning Seminar (psy112). We will explore and discuss the contents of the lecture in a practical way using Python.
 
-This book contains the course content for the Statistical Learning Seminar (psy112). We will explore and discuss the contents of the lecture in a practical way using Python.
+## Table of contents
+
+```{tableofcontents}
+```
+
+## Additional resources
+
+- https://www.statlearning.com/
+- https://animlbook.com/
+- https://geostatsguy.github.io/MachineLearningDemos_Book

@@ -5,8 +5,13 @@
 format: jb-book
 root: book/introduction
 parts:
-- caption: Section 1
+- caption: Machine Learning Basics
   chapters:
-    - file: book/sec1/abc
-      sections:
-        - file: book/sec1/abcd
+    - file: book/1_basics/1_introduction
+    - file: book/1_basics/2_bias_variance
+    - file: book/1_basics/3_resampling
+
+- caption: Modelling
+  chapters:
+    - file: book/2_models/1_model_selection
+    - file: book/2_models/2_regularization
