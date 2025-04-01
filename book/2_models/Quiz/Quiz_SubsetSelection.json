@@ -1,0 +1,22 @@
+[{
+    "question": "Which of the following statements is true about the subset selection methods?",
+    "type": "multiple_choice",
+    "answers": [ 
+        {
+            "answer": "For best subset selection you have to test 2^p models.",
+            "correct": true
+        },
+        {
+            "answer": "Backward stepwise selection is preferred over forward stepwise selection when p>n.",
+            "correct": false
+        },
+        {
+            "answer": "A model with all potential predictors will always have the largest R\u00b2 since the quantities are related to the training error.",
+            "correct": true
+        },
+        {
+            "answer": "Backward stepwise selection starts with a full model",
+            "correct": true
+        }
+    ]
+}]

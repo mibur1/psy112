@@ -6,4 +6,7 @@ seaborn
 nilearn
 scikit-learn
 jupyterquiz
-
+jupytercards
+statsmodels
+abess
+mlxtend
