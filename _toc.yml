@@ -10,6 +10,7 @@ parts:
     - file: book/1_basics/1_introduction
     - file: book/1_basics/2_bias_variance
     - file: book/1_basics/3_resampling
+    - file: book/1_basics/Exercises
 
 - caption: Modelling
   chapters:
