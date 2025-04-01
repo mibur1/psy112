@@ -1,0 +1,18 @@
+
+[{
+    "question":"When using Best Subset Selection to predict Salary with 9 predictors, how many different models (i.e., combinations of predictors) must be evaluated?",
+    "type": "numeric",
+    "answers": [
+        {
+            "type": "value",
+            "value": 512,
+            "correct": true,
+            "feedback": "Correct! Great job :)"  
+        },
+        {
+            "type": "default",
+            "correct": false,
+            "feedback": "Not quite.  Remember: Best Subset Selection tries **all possible combinations of predictors, so with p predictors, that's 2^p models. Let`s have another try :)"
+        }
+    ]
+}]

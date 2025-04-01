@@ -16,9 +16,13 @@ myst:
 ---
 
 # <i class="fa-solid fa-code"></i> What is Machine Learning?
+Have you ever asked yourself how Google Maps not only knows the way but also the fastest route? The secret behind it is called Machine Learning. By analyzing past traffic patterns, 
+it predicts future conditions and adjusts routes in real time. What seems like magic is actually smart data processing which make predictions about the future given the past.
 
-Machine learning is a field of artificial intelligence that allows computers to learn patterns from data and make predictions or decisions without being explicitly programmed. It has applications in psychology, such as predicting outcomes from behavioral data, analyzing brain data, or understanding patterns in survey responses.
 
+Machine learning is a field of artificial intelligence that allows computers to learn patterns from data and make predictions or decisions without being explicitly programmed. 
+It relies on algorithms, which are step-by-step processes with a defined beginning and end, to analyze behavioral data, brain activity, and survey responses, 
+helping to uncover meaningful patterns and predict outcomes.
 
 ## Types of learning
 
@@ -30,6 +34,7 @@ Machine learning can be categorized into three main types based on the way the m
 
 
 ## Classes of algorithms
+In addition to the type of learning, algorithms can also be categorized based on the type of data that needs to be predicted:
 
 | Type of data                  | Type of learning                                  | Type of learning                                       |
 |-------------------------------|---------------------------------------------------|--------------------------------------------------------|
@@ -42,6 +47,9 @@ Machine learning can be categorized into three main types based on the way the m
 
 Assessing the quality of a machine learning model is crucial to ensure its reliability and applicability. Some important evaluation metrics are:
 
-- Mean Squared Error (MSE): Measures the average squared difference between predicted and actual values, particularly for regression tasks.
-- Accuracy: Proportion of correctly predicted outcomes.
-- Cross-Validation: Divides the dataset into training and testing subsets to prevent overfitting.
+- **Mean Squared Error (MSE)**: Measures the average squared difference between predicted and actual values, particularly for regression tasks.
+- **Accuracy**: Proportion of correctly predicted outcomes.
+
+Additionally, techniques like **cross-validation** help estimate a model’s performance more reliably. Cross-validation splits the dataset into training and testing subsets, reducing the risk of overfitting and
+proving a better assessment of how the model will perform on unseen data.
+

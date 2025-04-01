@@ -1,0 +1,22 @@
+[{
+    "question": "High bias is associated with...",
+    "type": "multiple_choice",
+    "answers": [
+        {
+            "answer": "low training MSE and high test MSE",
+            "correct": false
+        },
+        {
+            "answer": "high training MSE and high test MSE",
+            "correct": true
+        },
+        {
+            "answer": "Low training MSE and low test MSE",
+            "correct": false
+        },
+        {
+            "answer": "high training MSE and low test MSE",
+            "correct": false
+        }
+    ]
+}]
