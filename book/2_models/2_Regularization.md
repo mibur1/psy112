@@ -26,7 +26,7 @@ Building on subset selection, an alternative approach is to include all *p* pred
 
 
 ----------------------------------------------------------------
-### *Todays data with many predictors - Hitters dataset*
+## *Todays data with many predictors - Hitters dataset*
 For pracitcal demonstration, we will use again the `Hitters` dataset. 
 
 ```{code-cell} 
@@ -89,7 +89,7 @@ y = hitters_subset2["Salary"]
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 ```
 
-### Ridge Regression
+## Ridge Regression
 ```{margin}
 Lamda is a tuning parameter that controls the strength of the penalty! 
 ```
@@ -289,7 +289,7 @@ test_score_lasso= lasso_cv.score(X_test_scaled, y_test)
 print(f"The R² test score for lasso model is {format(test_score_lasso)}.")
 ```
 
-### Lasso or Ridge Regression?! 
+## Lasso or Ridge Regression?! 
 In General , neither Righe nor Lasso will universally dominate the other! However, there are 3 main differences: 
 1) Regularization Type
     - Lasso regression applies L1 regularization, penalizing the absolute values of the coefficients

@@ -1,6 +1,7 @@
 title: Statistical Learning with Python
 author: Micha Burkhardt
 logo: logo.png
+copyright: "2025"
 
 # Reference: https://jupyterbook.org/en/stable/customize/config.html
 
@@ -39,3 +40,4 @@ sphinx:
 # Google colab launch button
 launch_buttons:
   colab_url: "https://colab.research.google.com"
+  

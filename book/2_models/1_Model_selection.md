@@ -142,7 +142,7 @@ Let's get back to our dataset and see how Best Subset Seletion is performed in p
 ```{code-cell} ipython3
 :tags: ["remove-input"]
 from jupyterquiz import display_quiz
-display_quiz("Quiz/Quiz_BestSubsetSelection.json", shuffle_answers=False)
+display_quiz("quiz/BestSubsetSelection.json", shuffle_answers=False)
 ```
 
 <br>
@@ -399,7 +399,7 @@ Backward stepwise selection works very similarly to forward selection — the ma
 :tags: [remove-input]
 
 from jupytercards import display_flashcards
-display_flashcards('Quiz/BackwardSelection_Flashcard.json')
+display_flashcards('quiz/BackwardSelection_Flashcard.json')
 ```
 
 
@@ -417,7 +417,7 @@ display_flashcards('Quiz/BackwardSelection_Flashcard.json')
 ```{code-cell} ipython3
 :tags: [remove-input]
 from jupyterquiz import display_quiz
-display_quiz('Quiz/Quiz_SubsetSelection.json')
+display_quiz('quiz/SubsetSelection.json')
 ```
 
 #### What next?

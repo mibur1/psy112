@@ -19,7 +19,7 @@ parts:
     - file: book/2_models/3_GAM
     - file: book/2_models/4_KNN
     - file: book/2_models/5_LDA_QDA
-    - file: book/2_models/6_Naive_Bayes
+    - file: book/2_models/6_Naive_bayes
     - file: book/2_models/7_SVM
     - file: book/2_models/8_Trees
     - file: book/2_models/9_Neural_networks

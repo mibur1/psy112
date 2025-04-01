@@ -59,7 +59,7 @@ The goal of the algorithm is to classify the flowers based on our features. As w
 ```{code-cell} ipython3
 :tags: [remove-input]
 from jupyterquiz import display_quiz
-display_quiz('Quiz/Quiz_Iris.json')
+display_quiz('quiz/iris.json')
 ```
 
 ### Validation Set approach
@@ -155,7 +155,7 @@ In the case of classification, we evaluate model performance using accuracy. An 
 :tags: [remove-input]
 
 from jupytercards import display_flashcards
-display_flashcards('Quiz/Flashcard_ValidationSet.json')
+display_flashcards('quiz/validation_set.json')
 
 ```
 
