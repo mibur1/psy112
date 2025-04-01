@@ -17,12 +17,12 @@ myst:
 
 # <i class="fa-solid fa-handshake"></i> Bias-Variance Tradeoff
 
-Machine learning systems are often just automated ways of reflecting patterns in the data they were trained on. The main goal is to keep the Mean Squared Error (MSE) as low as possible. While this might sound simple, it is actually quite challenging to find the perfect balance between generalization and accuracy. This challenge is defined by the **bias-variance trade-off**.
+Before we dive into the concept of bias, let’s briefly recap some theoretical concepts you learned about in the lecture. When we talk about fitting machine learning algorithms, we are referring to the process of estimating a function $f$ that best represents the relationship between the outcome and a set of labelled data (in supervised learning) or to uncover structural patterns in unlabelled data (in unsupervised learning). While the estimated function $f^$​ conveys important information about the data from which it was derived (the training data), our primary interest is in using this function to make accurate predictions for future cases in new, unseen data sets. A fundamental question in statistical learning is how well $f^$​ will perform on these future data sets, which brings us to the *bias-variance tradeoff* — a key factor in understanding how well our model generalizes.
 
 ```{admonition} Remember
 :class: note
 
-**Bias** is defined as the error that is introduced by approximating a real-life problem, which might be extremly complex, by a much simplet model. 
+**Bias** is defined as the error that is introduced by approximating a real-life problem, which might be extremly complex, by a much simpler model. 
  
  **Variance** refers to the amount by which the approximated function would change if we estimated it using a different training data set. 
 ```

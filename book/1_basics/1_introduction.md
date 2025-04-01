@@ -61,4 +61,4 @@ Assessing the performance of a machine learning model is crucial to ensure its r
 
 There are many more performance metrics (which you might already know), such as the Root Mean Squared Error (RMSE), R-Squared (R²), Precision, or a confusion matrix. You will get to know some of them in the following weeks.
 
-Additionally, techniques like **cross-validation** help estimate a model’s performance more reliably. Cross-validation splits the dataset into training and testing subsets, reducing the risk of overfitting and proving a better assessment of how the model will perform on unseen data. We will explore this topic in the [](3_resampling) session.
+Additionally, techniques like *cross-validation* help estimate a model’s performance more reliably. Cross-validation splits the dataset into training and testing subsets, reducing the risk of overfitting and proving a better assessment of how the model will perform on unseen data. We will explore this topic in the [](3_resampling) session.
