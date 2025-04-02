@@ -24,7 +24,7 @@ The two mostly used resampling methods are:
 - **Cross Validation** - creates non-overlapping substests that can be used to estimate the test error assocciated with a model
 - **Bootstrapping** - samples with replacement, resulting in (partly) overlapping samples
 
-```{admonition} Summary
+```{admonition} Note
 :class: hint
 
 Resampling methods involve:
