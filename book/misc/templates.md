@@ -172,3 +172,28 @@ IFrame('https://trinket.io/embed/python3/3fe4c8f3f4', 700, 500)
 
 <iframe width="560" height="315" src="https://mfr.ca-1.osf.io/render?url=https://osf.io/sqcvz/?direct%26mode=render%26action=download%26mode=render" frameborder="0" allowfullscreen></iframe>
 
+- Interactive plots:
+
+```{code-cell}
+import ipywidgets as widgets
+from ipywidgets import interact
+
+# Create some sample data
+np.random.seed(42)
+x = np.linspace(-5, 5, 30)
+noise = np.random.normal(0, 2, 100)
+y = (x**3 + np.random.normal(0, 15, size=x.shape)) / 50
+df = pd.DataFrame({'x': x, 'y': y})
+
+# Define a function that updates the plot based on the selected polynomial order
+def update_plot(Order=10):
+    fig, ax = plt.subplots(figsize=(6, 4))
+    sns.regplot(data=df, x="x", y="y", ax=ax, order=Order, ci=None)
+    ax.set_xlim(-5, 5)
+    ax.set_ylim(-3, 3)
+    plt.show()
+
+# Create an interactive slider for the polynomial order
+interact(update_plot, Order=widgets.IntSlider(min=1, max=50, step=1, value=1));
+
+```

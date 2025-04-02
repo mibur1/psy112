@@ -8,7 +8,6 @@ copyright: "2025"
 # Do not execute notebooks
 execute:
   execute_notebooks: "auto"
-  exclude_patterns: ["*.ipynb"]
 
 # Define the name of the latex output file for PDF builds
 latex:
@@ -36,8 +35,13 @@ html:
 sphinx:
   html_context:
     default_mode: dark
-
+  recursive_update: true
+  config:
+    html_js_files:
+      - "https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"
+      
 # Google colab launch button
 launch_buttons:
+  thebe: true
   colab_url: "https://colab.research.google.com"
   

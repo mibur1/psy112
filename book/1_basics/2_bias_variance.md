@@ -17,14 +17,14 @@ myst:
 
 # <i class="fa-solid fa-handshake"></i> Bias-Variance Tradeoff
 
-Before we dive into the concept of bias, let’s briefly recap some theoretical concepts you learned about in the lecture. When we talk about fitting machine learning algorithms, we are referring to the process of estimating a function $f$ that best represents the relationship between the outcome and a set of labelled data (in supervised learning) or to uncover structural patterns in unlabelled data (in unsupervised learning). While the estimated function $f^$​ conveys important information about the data from which it was derived (the training data), our primary interest is in using this function to make accurate predictions for future cases in new, unseen data sets. A fundamental question in statistical learning is how well $f^$​ will perform on these future data sets, which brings us to the *bias-variance tradeoff* — a key factor in understanding how well our model generalizes.
+Before we dive into the concept of bias, let’s briefly recap some theoretical concepts you learned about in the lecture. When we talk about fitting machine learning algorithms, we are referring to the process of estimating a function $f$ that best represents the relationship between the outcome and a set of labelled data (in supervised learning) or to uncover structural patterns in unlabelled data (in unsupervised learning). While the estimated function $\hat{f}$​ conveys important information about the data from which it was derived (the training data), our primary interest is in using this function to make accurate predictions for future cases in new, unseen data sets. A fundamental question in statistical learning is how well $\hat{f}$​ will perform on these future data sets, which brings us to the *bias-variance tradeoff* — a key factor in understanding how well our model generalizes.
 
-```{admonition} Remember
+```{admonition} Reminder
 :class: note
 
-**Bias** is defined as the error that is introduced by approximating a real-life problem, which might be extremly complex, by a much simpler model. 
- 
- **Variance** refers to the amount by which the approximated function would change if we estimated it using a different training data set. 
+**Bias** refers to the error introduced when a model makes simplifying assumptions about the real-world problem. It occurs when the model is too simple to capture the underlying complexities of the data, leading to systematic inaccuracies in predictions.
+
+**Variance** refers to the sensitivity of the model to small changes in the training data. It measures how much the model's predictions fluctuate when trained on different subsets of the data.
 ```
 
 ```{margin}
