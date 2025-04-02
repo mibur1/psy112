@@ -172,7 +172,7 @@ IFrame('https://trinket.io/embed/python3/3fe4c8f3f4', 700, 500)
 
 <iframe width="560" height="315" src="https://mfr.ca-1.osf.io/render?url=https://osf.io/sqcvz/?direct%26mode=render%26action=download%26mode=render" frameborder="0" allowfullscreen></iframe>
 
-- Interactive plots:
+- Interactive plots (not working, I now started to use plotly):
 
 ```{code-cell}
 import ipywidgets as widgets
