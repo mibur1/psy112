@@ -12,14 +12,13 @@ kernelspec:
   name: python3
 myst:
   substitutions:
-    ref_test: 1
+    training_data: 1
+    testing_data: 2
+    overfit: 3
+    occam: 4
 ---
 
 # <i class="fa-solid fa-repeat"></i> Recap: Regression Models
-
-$R^2$
-$R^2$
-$R^2$
 
 One of the the most important concepts you learned about in the [psy111 seminar](https://mibur1.github.io/psy111) were (linear) regression models. Let's quickly recap this concept and how to implement it in Python.
 
@@ -39,16 +38,16 @@ Here you can see the data in a scatterplot, with a linear regression model fitte
 
 ```{code-cell} ipython3
 :tags: [remove-input]
-
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 
+import warnings
+warnings.filterwarnings("ignore", message=".*Polyfit may be poorly conditioned.*")
+
 # Generate sample data
 np.random.seed(42)
-x = np.linspace(-5, 5, 60)
-indices = np.sort(np.random.choice(np.arange(60), size=30, replace=False))
-x = x[indices]
+x = np.linspace(-5, 5, 30)
 y = (x**3 + np.random.normal(0, 15, size=x.shape)) / 50
 df = pd.DataFrame({'x': x, 'y': y})
 
@@ -109,22 +108,6 @@ You can see that the linear regression has an R² of 0.753, which means that our
 ```{code-cell} ipython3
 :tags: [remove-input]
 
-import warnings
-import numpy as np
-import pandas as pd
-import plotly.graph_objects as go
-
-# Suppress polyfit conditioning warnings
-warnings.filterwarnings("ignore", message=".*Polyfit may be poorly conditioned.*")
-
-# Generate sample data
-np.random.seed(42)
-x = np.linspace(-5, 5, 60)
-indices = np.sort(np.random.choice(np.arange(60), size=30, replace=False))
-x = x[indices]
-y = (x**3 + np.random.normal(0, 15, size=x.shape)) / 50
-df = pd.DataFrame({'x': x, 'y': y})
-
 # Scatter trace for the raw data with updated marker properties
 scatter = go.Scatter(x=df['x'], y=df['y'], mode='markers',
                      marker=dict(size=10, color='lightgrey', line=dict(color='gray', width=2)), name='Data') 
@@ -183,34 +166,29 @@ fig
 
 As you probably expected, the R² increases as you increase the order of the regression model. However, it doesn't stop to do so after the 3rd order polynomial (which is the true shape of our data). The R² continues to increase until it hits 1 with a 29th order model. You can see that the model now goes through every single one of our data points. This did not happen by chance! A polynomial of degree 29 will perfectly interpolate our data, which consists of 30 data points. This is because a polynomial of degree n−1 has n coefficients, which can be uniquely determined to pass through n distinct points (assuming the x-values are distinct).
 
-But what should you do with this information? Well, as the topic of this seminar is *statistical and machine learning*, we will be concerned with how to train models to make predictions for new, unseen data:
+```{margin}
+{{training_data}}\. Training data refers to the data which was used for model fitting.
+```
+
+```{margin}
+{{testing_data}}\. Testing data refers to data which was used to evaluate the performance of a model. This is new, unseen data, whic was not used for training.
+```
+
+But what should you do with this information? Well, as the topic of this seminar is *statistical and machine learning*, we are usually concerned with making predictions for new, unseen data. Until now, we have always fit (trained) and evaluated (tested) our model on the same data. We can call this the *training data*<sup>{{training_data}}</sup>. However, we can also create new data with the same underlying function and test the model on this. We call this the *testing data*<sup>{{testing_data}}</sup>:
 
 ```{code-cell} ipython3
 :tags: [remove-input]
 
-import warnings
-import numpy as np
-import pandas as pd
-import plotly.graph_objects as go
-
-# Fit Models on training data
-np.random.seed(42)
-x_all = np.linspace(-5, 5, 60)
-indices_train = np.sort(np.random.choice(np.arange(60), size=30, replace=False))
-x_train = x_all[indices_train]
-y_train = (x_train**3 + np.random.normal(0, 15, size=x_train.shape)) / 50
-df_train = pd.DataFrame({'x': x_train, 'y': y_train})
-
-# Precompute polynomial coefficients fitted on training data for orders 1 to 30
+# Compute polynomial coefficients fitted on the existing data
 training_coeffs = []
 for order in range(1, 31):
-    coeffs = np.polyfit(df_train['x'], df_train['y'], order)
+    coeffs = np.polyfit(df['x'], df['y'], order)
     training_coeffs.append(coeffs)
 
-#  Generate test data
-np.random.seed(100)
-x_all_test = np.linspace(-5, 5, 60)
-indices_test = np.sort(np.random.choice(np.arange(60), size=30, replace=False))
+# Generate new test data (randomly draw 30 data points to not have all points equally spaced)
+np.random.seed(69)
+x_all_test = np.linspace(-5, 5, 100)
+indices_test = np.sort(np.random.choice(np.arange(100), size=30, replace=False))
 x_test = x_all_test[indices_test]
 y_test = (x_test**3 + np.random.normal(0, 15, size=x_test.shape)) / 50
 df_test = pd.DataFrame({'x': x_test, 'y': y_test})
@@ -229,8 +207,9 @@ regression_traces_test = []
 r2_test_list = []
 x_fit = np.linspace(-5, 5, 400)
 for order in range(1, 31):
-    coeffs = training_coeffs[order-1]  # model fitted on training data
-    # Generate the regression curve using the training coefficients
+    coeffs = training_coeffs[order-1]
+    
+    # Generate the regression curve
     y_fit = np.polyval(coeffs, x_fit)
     trace = go.Scatter(
         x=x_fit,
@@ -286,4 +265,36 @@ layout_test = go.Layout(
 
 fig_test = go.Figure(data=data_test, layout=layout_test)
 fig_test
+```
+
+```{margin}
+{{overfit}}\. Overfitting refers to fitting patterns in the training data which do not generalize to the testing data.
+```
+
+<a href="https://commons.wikimedia.org/wiki/File:William_of_Ockham.png" target="_blank">
+  <figure style="float:right; width:17%; margin-bottom:0.5em; margin-left:1.5em;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/7/70/William_of_Ockham.png" alt="William Occam" style="width:100%;">
+    <figcaption style="margin-top:0.2em; font-size:small;">William of Occam <sup>4</sup></figcaption>
+  </figure>
+</a>
+<br>
+
+You can see that the R² now has a peak around a 3rd order polynomial regression model and then drastically decreases for higher order polynomials. This means that our previously trained models do not really fit our new data anymore. Why is this the case? Basically, these higher-order models became too flexible and *overfit* <sup>{{overfit}}</sup> to the training data. Once we apply the models to new testing data, they will produce a much worse performance, as they are too specialized (they basically just memorized the training data).
+
+```{margin}
+{{occam}}\. Image by <a href="https://commons.wikimedia.org/wiki/File:William_of_Ockham.png">Moscarlop</a>, used under <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>.
+```
+
+So how can we then find the best model? From your psychology lectures you might be familiar with *Occam's razor*, which states:
+
+> Entia non sunt multiplicanda praeter necessitatem.
+
+This essentially translates to *"Before you try a complicated hypothesis, you should make quite sure that no simplification of it will explain the facts equally well"*. Our model should thus be as simple as possible, but as complex as necessary. In machine learning, this concept is often referred to as the [](2_bias_variance), which we will explore next week.
+
+```{admonition} Summary
+:class: tip
+
+- Regression models can be used as prediction models in the context of machine learning.
+- The performance of a prediction model should always be assessed on new, unseen data.
+- It is often useful to look for the simplest possible model which still provides sufficient answers.
 ```
