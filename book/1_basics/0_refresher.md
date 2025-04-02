@@ -26,9 +26,12 @@ Have a look at the following code, which creates some simulated data. Can you gu
 
 ```{code-block} ipython3
 import numpy as np
+import pandas as pd
 
 x = np.linspace(-5, 5, 30)
 y = (x**3 + np.random.normal(0, 15, size=x.shape)) / 50
+
+df = pd.DataFrame({'x': x, 'y': y})
 ```
 
 <details>
@@ -94,7 +97,7 @@ fig
 </details>
 <br>
 
-Let's have a closer look at the model statistics:
+Let's have a closer look at the model statistics. As introduced last semester, we can e.g. use the `statsmodels.formula.api` library to specify and fit regression models with a formula notation similar to R. We use the `ols()` class to fit the model specified as `y ~ x` which translates to "y predicted by x":
 
 ```{code-cell} ipython3
 import statsmodels.formula.api as smf
@@ -103,7 +106,8 @@ model = smf.ols("y ~ x", data=df).fit()
 print(model.summary())
 ```
 
-You can see that the linear regression has an R² of 0.753, which means that our model explains 75% of the variance in our data. That's pretty good! But I'm sure we can do better. After all, life is more complicated than just a straigth line, no? <sub>(and we also know that the underlying data is a 3rd order polynomial)</sub>
+You should already be familiar with such outputs. Briefly, the most important information are the model parameters displayed under `coef` as well as the  well as the performance statistics such as the `R-squared`.
+You can see that our model has an R-squared of 0.753, which means that our model explains 75% of the variance in our data. That's pretty good! But I'm sure we can do better. After all, life is more complicated than just a straigth line, no? <sub>(and we also know that the underlying data is a 3rd order polynomial)</sub>
 
 ```{code-cell} ipython3
 :tags: [remove-input]
@@ -164,7 +168,7 @@ fig = go.Figure(data=data, layout=layout)
 fig
 ```
 
-As you probably expected, the R² increases as you increase the order of the regression model. However, it doesn't stop to do so after the 3rd order polynomial (which is the true shape of our data). The R² continues to increase until it hits 1 with a 29th order model. You can see that the model now goes through every single one of our data points. This did not happen by chance! A polynomial of degree 29 will perfectly interpolate our data, which consists of 30 data points. This is because a polynomial of degree n−1 has n coefficients, which can be uniquely determined to pass through n distinct points (assuming the x-values are distinct).
+As you probably expected, the R² increases as you increase the order of the regression model. However, this doesn't stop after the 3rd order polynomial (which is the true shape of our data). The R² continues to increase until it hits 1 with a 29th order model. You can see that the model now goes through every single one of our data points. This did not happen by chance! A polynomial of degree 29 can perfectly interpolate our data, which consists of 30 data points. This is because a polynomial of degree n−1 has n coefficients, which can be uniquely determined to pass through n distinct points (assuming the x-values are distinct).
 
 ```{margin}
 {{training_data}}\. Training data refers to the data which was used for model fitting.
