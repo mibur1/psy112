@@ -3,6 +3,7 @@ numpy
 pandas
 matplotlib
 seaborn
+plotly
 nilearn
 scikit-learn
 jupyterquiz
