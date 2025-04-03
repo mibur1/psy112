@@ -1,0 +1,22 @@
+[{
+    "question": "Which statements about Generalized Additive Models (GAMs) are correct?",
+    "type": "multiple_choice",
+    "answers": [ 
+        {
+            "answer": "GAM can outperform linear models in terms of prediction.",
+            "correct": true
+        },
+        {
+            "answer": "Additivity is convenient but it is also one of the main limitations of GAMs",
+            "correct": true
+        },
+        {
+            "answer": "Interpretability is one of the advantages of GAMs due to their additive structure.",
+            "correct": true
+        },
+        {
+            "answer": "GAMs always include all possible interactions between variables automatically.",
+            "correct": false
+        }
+    ]
+}]
