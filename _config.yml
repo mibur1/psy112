@@ -20,7 +20,7 @@ bibtex_bibfiles:
 
 # Information about where the book exists on the web
 repository:
-  url: https://github.com/mibur1/psy112-book
+  url: https://github.com/mibur1/psy112
   branch: main
 
 # Add GitHub buttons to your book
@@ -28,13 +28,13 @@ html:
   home_page_in_navbar: false
   use_issues_button: true
   use_repository_button: true
-  baseurl: https://mibur1.github.io/psy112-book/
+  baseurl: https://mibur1.github.io/psy112
   extra_css:
     - _static/custom.css
 
 sphinx:
   html_context:
-    default_mode: dark
+    default_mode: light
   recursive_update: true
   config:
     html_js_files:

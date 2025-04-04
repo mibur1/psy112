@@ -16,51 +16,51 @@ myst:
 ---
 
 # <i class="fa-solid fa-dice"></i> Resampling Strategies
-In the world of data science and machine learning, having access to large datasets is often a luxury rather than the norm. However, to build robust predictive models, we need effective ways to assess model performance and minimize the risk of overfitting. This is where resampling methods come into play.
 
-Resampling methods involve **repeatedly drawing samples** from an available dataset to simulate independent datasets. These simulated sets help assess how well a trained model will perform on future data. While splitting data into training and test sets is a common practice, the results can vary depending on how the split is made. Resampling techniques provide a more reliable way to estimate model performance, reducing variability and improving accuracy.
+As neuropsychologists, you will be well aware of the challenges involved in data collection — time, cost, and the complexities of experimental design often make large datasets hard to come by. However, robust predictive modeling is critical not only because extensive datasets can be rare, but also because ensuring that models generalize well to new data is often an essential question.
 
-The two mostly used resampling methods are:
-- **Cross Validation** - creates non-overlapping substests that can be used to estimate the test error assocciated with a model
-- **Bootstrapping** - samples with replacement, resulting in (partly) overlapping samples
+Resampling methods offer a powerful approach to assess model performance and mitigate overfitting. Rather than relying on a single train-test split, which can yield performance estimates that vary significantly depending on the split, resampling techniques repeatedly draw samples from your data. This process simulates multiple independent training and test sets, providing a more stable and reliable evaluation of your model.
 
-```{admonition} Note
+
+```{admonition} Resampling Strategies
 :class: hint
 
-Resampling methods involve:
-1. Repeatedly drawing a sample from an existing dataset
-2. fit the model to all resulting subsets and predict a held out amount of data
-3. Examine all of the refitted models and draw appropriate conclusions
+The two most widely used resampling methods are:
+
+- *Cross validation*: Creating non-overlapping subsets for training and testing
+- *Bootstrapping*: Sampling with replacement, resulting in (partly) overlapping samples
 ```
 
-## **Cross-Validation**
-### *Todays data - Iris dataset*
-Let's look at how to apply the validation set approach using data.
-The data set consists of 50 samples from each of three species of Iris (Iris setosa, Iris virginica and Iris versicolor). Four features were measured from each sample: the length and the width of the sepals and petals, in centimeters.
+## The data
+
+We will use a dataset you are already familiar with from last semester: The [Iris](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html) dataset which contains 150 samples from three species of the iris plant (iris setosa, iris virginica and iris versicolor). Four features were measured: the length and the width of the sepals and petals, in centimeters.
 
 ```{code-cell} 
-# import packages
+import seaborn as sns
+import pandas as pd
 from sklearn import datasets
-import matplotlib.pyplot as plt
 
-# load dataset
-iris= datasets.load_iris()
+# Get data
+iris = datasets.load_iris(as_frame=True)
+df = iris.frame
+df['class'] = pd.Categorical.from_codes(iris.target, iris.target_names)
 
-# Lets visualize two of our features to get an impression of the data
-fig, ax = plt.subplots()
-scatter = ax.scatter(iris.data[:, 0], iris.data[:, 1], c=iris.target)
-ax.set(xlabel=iris.feature_names[0], ylabel=iris.feature_names[1])
-fig= ax.legend(
-    scatter.legend_elements()[0], iris.target_names, loc="lower right", title="Classes"
-)
+# Plot data
+sns.scatterplot(data=df, x='sepal length (cm)', y='sepal width (cm)', hue="class");
 ```
-The goal of the algorithm is to classify the flowers based on our features. As we only have 150 datapoints for this prediction, we can use resampling methods to avoid overfitting and get a more stable result.
+
+The goal of our model will be to classify the flowering plants based on two features shown in the plot (sepal length and width). Which of the following is true about the model and task at hand?
 
 ```{code-cell} ipython3
 :tags: [remove-input]
 from jupyterquiz import display_quiz
 display_quiz('quiz/iris.json')
 ```
+
+## Cross Validation
+
+
+
 
 ### Validation Set approach
 
@@ -72,40 +72,16 @@ In the simplest approach of cross-validation the dataset is **randomly split int
 - *Training Set*: Used to train the model by learning patterns and relationships in the data
 - *Validation Set*: Used to assess model performance across different models and hyperparameter choices. It therefore provides an estimation of the test error.
 
-```{code-cell} ipython3
-:tags: [remove-input]
-## creating a nice looking figure to visualize the spliiting in validation set approach
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
 
-# Create figure and axis
-fig, ax = plt.subplots(figsize=(8, 3), dpi=200)
-ax.set_xlim(0, 10)
-ax.set_ylim(0, 6)
-ax.axis("off")
+```{figure} figures/ValidationSet.drawio.png
+:name: VS
+:alt: Validation Set approach
+:align: center
 
-# Whole dataset
-ax.add_patch(patches.Rectangle((1, 4), 8, 1, color='gray', alpha=0.6))
-ax.text(5, 4.5, "Whole Data Set", ha='center', va='center', fontsize=12, color='black')
-
-# Validation set
-ax.add_patch(patches.Rectangle((1, 2), 4, 1, color='lightcoral', alpha=0.6))
-ax.text(3, 2.5, "Validation Set", ha='center', va='center', fontsize=12, color='black')
-
-# Training set
-ax.add_patch(patches.Rectangle((5, 2), 4, 1, color='lightblue', alpha=0.6))
-ax.text(7, 2.5, "Training Set", ha='center', va='center', fontsize=12, color='black')
-
-# Arrow from Whole Data Set to Training/Validation Set
-ax.annotate('', xy=(3, 4), xytext=(3, 3), arrowprops=dict(arrowstyle='->', color='black'))
-ax.annotate('', xy=(7, 4), xytext=(7, 3), arrowprops=dict(arrowstyle='->', color='black'))
-# to Micha: Arrows even needed??
-
-# Title
-ax.text(5, 5.5, "Validation Set Approach", ha='center', va='center', fontsize=14, fontweight='bold')
-
-plt.show()
+The validation set splits the dataset into a training and a testing set (these do not necessarily need to be of equal size).
 ```
+
+
 Lets try this with our Iris dataset.
 
 1.  As a first step, we need to **define the Target(y) and Features(X)**.
@@ -138,14 +114,13 @@ A high C will try to classify all training points correctly and leads to a compl
 ```{code-cell}
 from sklearn import svm
 
-# Using a support vector machine classifier with the training data
-# C as hyperparameter/Regularization parameter
-clf = svm.SVC(kernel='linear', C=1).fit(X_train, y_train)
+model = svm.SVC(kernel='linear', C=1)
+fit = model.fit(X_train, y_train)
 ```
 
 4. **Evaluate** model performance
 ```{code-cell}
-clf.score(X_test, y_test)
+fit.score(X_test, y_test)
 
 ```
 In the case of classification, we evaluate model performance using accuracy. An accuracy of ~97% means that, on average, the model correctly predicts 97 out of 100 test samples.
@@ -168,62 +143,17 @@ While the Validation Set Approach is a quick and easy way to check how well a mo
 ### k-fold Cross Validation
 To get a more reliable and robust performance estimate, we need something smarter— something that doesn’t leave our results up to chance. Rather than worrying about which split of data to use for training versus validation, we'll use them all in turn.
 
-In k-fold cross validation we randomly dive the dataset into k equal-sized folds. One fold is designated at the validation set, while the remaining **k-1** samples are the training sets. The fitting process is repeated **k-times**, each time using a different fold as the validation set. At the end of the process, we compute the **average** score across all validation sets to obtain a more reliable estimate of the model's overall performance.
+In k-fold cross validation we randomly dive the dataset into k equal-sized folds. One fold is designated at the validation set, while the remaining $k-1$ samples are the training sets. The fitting process is repeated $$k$-times, each time using a different fold as the validation set. At the end of the process, we compute the average score across all validation sets to obtain a more reliable estimate of the model's overall performance.
 
 
-```{code-cell} ipython3
-:tags: [remove-input]
+```{figure} figures/CV.drawio.png
+:name: CV
+:alt: Cross validation
+:align: center
 
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-# documentation:
-# https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.Rectangle.html
-
-
-# defining k 
-k=5
-
-# Create figure and axis
-fig, ax = plt.subplots(figsize=(8, 3))
-ax.set_xlim(0, 13)
-ax.set_ylim(0, k+4)
-ax.axis("off")
-
-# Whole dataset
-ax.add_patch(patches.Rectangle((1, 8), 10, 1, color='gray', alpha=0.6))
-ax.text(6, 8.5, "Whole Data Set", ha='center', va='center', fontsize=12, color='black')
-
-# k=1 
-# Rectangle(xy, width, height...)
-ax.add_patch(patches.Rectangle((1, 2), 2, 1, facecolor='lightcoral', alpha=0.6))        # Valdiation set
-ax.add_patch(patches.Rectangle((3, 2), 8, 1, facecolor='lightblue', alpha=0.6))         # Training set 
-
-# k=2 
-ax.add_patch(patches.Rectangle((1, 3), 2, 1, facecolor='lightblue',  alpha=0.6))  # First training part
-ax.add_patch(patches.Rectangle((3, 3), 2, 1, facecolor='lightcoral',  alpha=0.6))  # Validation part
-ax.add_patch(patches.Rectangle((5, 3), 6, 1, facecolor='lightblue', alpha=0.6))   # Remaining training part
-
-# k=3
-ax.add_patch(patches.Rectangle((1, 4), 4, 1, facecolor='lightblue',  alpha=0.6)) 
-ax.add_patch(patches.Rectangle((5, 4), 2, 1, facecolor='lightcoral',  alpha=0.6))   
-ax.add_patch(patches.Rectangle((7, 4), 4, 1, facecolor='lightblue', alpha=0.6))  
-
-# k=4
-ax.add_patch(patches.Rectangle((1, 5), 6, 1, facecolor='lightblue',  alpha=0.6)) 
-ax.add_patch(patches.Rectangle((7, 5), 2, 1, facecolor='lightcoral',  alpha=0.6))   
-ax.add_patch(patches.Rectangle((9, 5), 2, 1, facecolor='lightblue', alpha=0.6))  
-
-# k=5
-ax.add_patch(patches.Rectangle((1, 6), 8, 1, facecolor='lightblue',  alpha=0.6)) 
-ax.add_patch(patches.Rectangle((9, 6), 2, 1, facecolor='lightcoral',  alpha=0.6))   
-
-
-# Arrow from Whole Data Set to Training/Validation Set
-ax.annotate('', xy=(6, 7), xytext=(6, 8), arrowprops=dict(arrowstyle='<-', color='black'))
-
-plt.show()
-# probably not the most efficient way! Maybe putting it in a loop? 
+K-fold cross validation splits the dataset into $k$ equally sized parts and then trains the model on all posible combinations of it, keeping the proportion of train/test data constant.
 ```
+
 
 Let`s also try this method on our dataset. 
 
