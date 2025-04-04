@@ -81,7 +81,7 @@ The training and testing set neither need to be of equal size nor do they need t
 
 1.  Define features and target data
 
-```{code-cell}
+```{code-cell} ipython3
 iris = datasets.load_iris(as_frame=True)
 
 # Features: sepal length and width; target: type of flower
@@ -91,7 +91,7 @@ y = df["target"]
 
 2. Split the data into training and test samples
 
-```{code-cell}
+```{code-cell} ipython3
 from sklearn.model_selection import train_test_split
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=42)
@@ -99,7 +99,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_
 
 3. Fit the model (we use a support vector classifier which you will learn about later in the seminar)
 
-```{code-cell}
+```{code-cell} ipython3
 from sklearn import svm
 
 model = svm.SVC(kernel='linear')
@@ -108,7 +108,7 @@ fit = model.fit(X_train, y_train)
 
 4. Evaluate model performance
 
-```{code-cell}
+```{code-cell} ipython3
 fit.score(X_test, y_test)
 ```
 
@@ -132,12 +132,13 @@ display_flashcards('quiz/validation_set.json');
 The validation set approach is a quick and easy way to check how well a model performs. However, it has a major flaw: it puts all its trust in a single data split which can doom a great model or trick us into thinking a weak model performs better than it actually does.
 ```
 
-### K-fold Cross Validation (CV)
+## Cross Validation (CV)
 
-To get a more reliable and robust performance estimate, we need something smarter — something that doesn’t leave our results up to chance. Rather than worrying about which split of data to use for training versus validation, we'll use them all in turn.
+### K-fold CV
 
-In k-fold CV we randomly dive the dataset into $k$ equal-sized folds. One fold is designated at the validation set, while the remaining $k-1$ samples are the training sets. The fitting process is repeated $$k$-times, each time using a different fold as the validation set. At the end of the process, we compute the average score across all validation sets to obtain a more reliable estimate of the model's overall performance.
+To get a more reliable and robust performance estimate, we need something smarter — something that doesn’t leave our results up to chance. Rather than worrying about if the split of data used for training and validation is biased, we will perform this splitting multiple times and use all of the splits in turn.
 
+In k-fold CV we randomly dive the dataset into $k$ equal-sized folds. One sample is designated at the validation set, while the remaining $k-1$ samples are the training sets. The fitting process is repeated $k$-times, each time using a different fold as the validation set. At the end of the process, we can compute the average accuracy across all validation sets to obtain a more reliable estimate of the model's overall performance.
 
 ```{figure} figures/CV.drawio.png
 :name: CV
@@ -205,8 +206,7 @@ Choosing an appropriate k involves a tradeoff between bias, variance, and comput
 Generally speaking, $k=5$ or $k=10$ are common choices.
 ```
 
-
-### Leave-one-out Cross Validation (LOOCV)
+### Leave-one-out CV (LOOCV)
 
 LOOCV is a special case of k-fold cross validation, where $k$ equals the number of observations. In LOOCV, the model is trained on all but one data point, and the remaining single observation is used for validation. This process repeats for each data point, ensuring every observation is used for testing exactly once. 
 
@@ -224,9 +224,50 @@ print(f"Average accuracy:    {scores.mean()}")
 print(f"Indidual accuracies: {scores}")
 ```
 
+## Side Note: Bootstrapping
 
-## Bootstrapping
+Bootstrapping is a resampling technique used to estimate the sampling distribution of an estimator by repeatedly drawing samples — *with replacement* — from the original dataset. In the context of machine learning, bootstrapping is often used to assess the variability and uncertainty of model performance (for the purpose of estimating the prediction accuracies, k-fold CV is generally preferred). Unlike traditional cross-validation, which partitions the dataset into distinct training and validation sets, bootstrapping creates multiple training sets by sampling the data with replacement. In each iteration, the model is trained on the bootstrap sample, and the out-of-bag (OOB) samples (i.e., the observations not included in that particular bootstrap sample) are used as a surrogate for the validation set. Generally, a larger number of iterations would be performed in real applications, but we here outline the concept with 10 iterations:
 
-Bootstrapping is a resampling technique in statistics and machine learning that repeatedly draws samples *with replacement* from a dataset to estimate a population parameter. It can be used to quantify the uncertainty associated with a given estimator or statistical learning method.  
+```{code-cell} ipython3
+import numpy as np
+import pandas as pd
+from sklearn import datasets, svm
+from sklearn.utils import resample
 
-As in CV, bootstrapping also uses training and validation sets. The training sets consist of samples drawn with replacement, while the original dataset serves as the validation set:
+# Load the data
+iris = datasets.load_iris(as_frame=True)
+df = iris.frame
+
+n_iterations = 10
+scores = []
+
+for i in range(n_iterations):
+    # Create a bootstrap sample
+    bootstrap_sample = resample(df, replace=True, n_samples=len(df), random_state=i)
+    
+    # Determine the out-of-bag (OOB) samples: rows not in the bootstrap sample.
+    oob_indices = df.index.difference(bootstrap_sample.index)
+    
+    # If no OOB samples are available, skip this iteration.
+    if len(oob_indices) == 0:
+        print(f"Iteration {i+1}: No out-of-bag samples, skipping iteration.")
+        continue
+    
+    oob_sample = df.loc[oob_indices]
+    
+    # Define features and target for training and testing
+    X_train = bootstrap_sample[["sepal length (cm)", "sepal width (cm)"]]
+    y_train = bootstrap_sample["target"]
+    X_test = oob_sample[["sepal length (cm)", "sepal width (cm)"]]
+    y_test = oob_sample["target"]
+    
+    # Train and evaluate the model
+    model = svm.SVC(kernel='linear')
+    model.fit(X_train, y_train)
+    
+    score = model.score(X_test, y_test)
+    scores.append(score)
+    print(f"Iteration {i+1}: Accuracy = {score:.3f}")
+
+print("\nMean Accuracy:", np.mean(scores))
+```
