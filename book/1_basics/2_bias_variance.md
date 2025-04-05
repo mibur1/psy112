@@ -206,6 +206,7 @@ When we increase the flexibility of the model by adding more parameters, we are 
 
 Eventually, the reduction in bias is no longer sufficient to counterbalance the increase in variance. This is why a model with a very low training MSE may still suffer from a high test MSE: the low training error is primarily a result of fitting the noise (i.e., high variance), rather than capturing a true underlying pattern.
 
+<br>
 
 ```{admonition} Summary
 :class: tip

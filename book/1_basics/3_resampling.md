@@ -165,7 +165,7 @@ model = svm.SVC(kernel='linear')
 scores = cross_val_score(model, X, y, cv=k_fold) 
 
 print(f"Average accuracy:    {scores.mean()}")
-print(f"Indidual accuracies: {scores}")
+print(f"Individual accuracies: {scores}")
 ```
 
 If we are interested in the exact models, we can also run the training and evaluation explicitly which allows us to save the models:
