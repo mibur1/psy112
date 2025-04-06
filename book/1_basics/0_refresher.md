@@ -22,7 +22,7 @@ myst:
 
 One of the the most important concepts you learned about in the [psy111 seminar](https://mibur1.github.io/psy111) were (linear) regression models. Let's quickly recap this concept and how to implement it in Python.
 
-Have a look at the following code, which creates some simulated data. Can you guess from the code, what the underlying pattern is?
+Have a look at the following code, which creates some simulated data. Can you deduce from the code, what the underlying pattern is?
 
 ```{code-block} ipython3
 import numpy as np
@@ -37,7 +37,7 @@ df = pd.DataFrame({'x': x, 'y': y})
 <details>
 <summary><strong>Click to reveal the plot</strong></summary>
 
-Here you can see the data in a scatterplot, with a linear regression model fitted to it. Do you think it fits the data well?
+Here you can see the data in a scatterplot, with a linear regression model fitted to the data. Do you think the linear model fits the data well?
 
 ```{code-cell} ipython3
 :tags: [remove-input]
@@ -97,7 +97,7 @@ fig
 </details>
 <br>
 
-Let's have a closer look at the model statistics. As introduced last semester, we can e.g. use the `statsmodels.formula.api` library to specify and fit regression models with a formula notation similar to R. We use the `ols()` class to fit the model specified as `y ~ x` which translates to "y predicted by x":
+Let's take a closer look at the model. As introduced last semester, we can e.g. use the `statsmodels.formula.api` library to specify and fit regression models with a formula notation similar to R. We use the `ols()` class to fit the model specified as `y ~ x` which translates to "y predicted by x":
 
 ```{code-cell} ipython3
 import statsmodels.formula.api as smf
@@ -106,8 +106,8 @@ model = smf.ols("y ~ x", data=df).fit()
 print(model.summary())
 ```
 
-You should already be familiar with such outputs. Briefly, the most important information are the model parameters displayed under `coef` as well as the  well as the performance statistics such as the `R-squared`.
-You can see that our model has an R-squared of 0.753, which means that our model explains 75% of the variance in our data. That's pretty good! But I'm sure we can do better. After all, life is more complicated than just a straigth line, no? <sub>(and we also know that the underlying data is a 3rd order polynomial)</sub>
+You should already be familiar with such outputs. Briefly, the most important information is the model parameters displayed under `coef` and the performance statistics such as the `R-squared`.
+You can see that our model has an R-squared of 0.753, which means that the model explains 75% of the variance in the data. That's pretty good! But I'm sure we can do better. After all, life is more complicated than just a straigth line, no? <sub>(And we also know that the underlying data was simulated according to a 3rd order polynomial.)</sub>
 
 ```{code-cell} ipython3
 :tags: [remove-input]
@@ -168,17 +168,17 @@ fig = go.Figure(data=data, layout=layout)
 fig
 ```
 
-As you probably expected, the R² increases as you increase the order of the regression model. However, this doesn't stop after the 3rd order polynomial (which is the true shape of our data). The R² continues to increase until it hits 1 with a 29th order model. You can see that the model now goes through every single one of our data points. This did not happen by chance! A polynomial of degree 29 can perfectly interpolate our data, which consists of 30 data points. This is because a polynomial of degree n−1 has n coefficients, which can be uniquely determined to pass through n distinct points (assuming the x-values are distinct).
+As you probably expected, the R² increases as you increase the order of the polynomial in the regression model. However, this doesn't stop after the 3rd order polynomial (which is the true function that generated the data). The R² continues to increase until it hits 1 for a model that includes a 29th-order polynomial. You can see that the model now goes through every single one of the data points. This did not happen by chance! A polynomial of degree 29 can perfectly interpolate the present data, which consists of 30 data points. This is because a polynomial of degree n−1 has n coefficients, which can be uniquely determined to pass through n distinct points (given that all the x-values are distinct).
 
 ```{margin}
 {{training_data}}\. Training data refers to the data which was used for model fitting.
 ```
 
 ```{margin}
-{{testing_data}}\. Testing data refers to data which was used to evaluate the performance of a model. This is new, unseen data, whic was not used for training.
+{{testing_data}}\. Testing data refers to data which was used to evaluate the performance of a model. This is new, unseen data, meaning that it was not used for training.
 ```
 
-But what should you do with this information? Well, as the topic of this seminar is *statistical and machine learning*, we are usually concerned with making predictions for new, unseen data. Until now, we have always fit (trained) and evaluated (tested) our model on the same data. We can call this the *training data*<sup>{{training_data}}</sup>. However, we can also create new data with the same underlying function and test the model on this. We call this the *testing data*<sup>{{testing_data}}</sup>:
+But what should you do with this information? Well, as the topic of this seminar is *statistical and machine learning*, we are usually concerned with making predictions for new, unseen data. Until now, we have always fit (trained) and evaluated (tested) our model on the same data, aiming to make statistical inferences about the coefficients of relatively small models. We can call this the *training data*<sup>{{training_data}}</sup>. However, we can also generate new data with the same underlying function and test the model on this repeatedly generated data that reflects the same underlying true association between y and x. We call this the *testing data*<sup>{{testing_data}}</sup>:
 
 ```{code-cell} ipython3
 :tags: [remove-input]
@@ -289,7 +289,7 @@ You can see that the R² now has a peak around a 3rd order polynomial regression
 {{occam}}\. Image by <a href="https://commons.wikimedia.org/wiki/File:William_of_Ockham.png">Moscarlop</a>, used under <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>.
 ```
 
-So how can we then find the best model? From your psychology lectures you might be familiar with *Occam's razor*, which states:
+So how can we then find the best model that avoids overfitting? From your classes in basic (psychological) methods, you might be familiar with *Occam's razor*, which states that:
 
 > Entia non sunt multiplicanda praeter necessitatem.
 
@@ -300,5 +300,5 @@ This essentially translates to *"Before you try a complicated hypothesis, you sh
 
 - Regression models can be used as prediction models in the context of machine learning.
 - The performance of a prediction model should always be assessed on new, unseen data.
-- It is often useful to look for the simplest possible model which still provides sufficient answers.
+- It is often useful to look for the simplest possible model that still provides sufficiently accurate answers.
 ```

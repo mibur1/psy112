@@ -17,21 +17,21 @@ myst:
 
 # <i class="fa-solid fa-handshake"></i> Bias-Variance Tradeoff
 
-Before we dive into the concept of bias, let’s briefly recap some theoretical concepts you learned about in the lecture. When we talk about fitting machine learning algorithms, we are referring to the process of estimating a function $f$ that best represents the relationship between the outcome and a set of labelled data (in supervised learning) or to uncover structural patterns in unlabelled data (in unsupervised learning). While the estimated function $\hat{f}$​ conveys important information about the data from which it was derived (the training data), our primary interest is in using this function to make accurate predictions for future cases in new, unseen data sets. 
+Before we dive into the concept of bias, let’s briefly recap some theoretical concepts you learned about in the lecture. When we talk about fitting machine learning models, we are referring to the process of estimating a function $f$ that best represents the relationship between an outcome and a set of labelled data (in supervised learning) or to uncover structural patterns in unlabelled data (in unsupervised learning). While the estimated function $\hat{f}$​ conveys important information about the data from which it was derived (the training data), our primary interest is in using this function to make accurate predictions for future cases in new, unseen data sets. 
 
-The fundamental question in statistical learning is how well $\hat{f}$​ will perform on these future data sets, which brings us to the *bias-variance tradeoff*. Bias occurs when a model is too simple to capture the underlying complexities of the data, leading to systematic inaccuracies in its predictions. Variance measures how much the model's predictions fluctuate when trained on different subsets of the data.
+The fundamental question in statistical learning is how well $\hat{f}$​ will perform on these future data sets, which brings us to the concept of the *bias-variance tradeoff*. Bias occurs when a model is too simple to capture the underlying complexities of the data, leading to systematic inaccuracies in its predictions. Variance measures how much the model's predictions fluctuate when trained on different subsets of the data.
 
 ```{admonition} Reminder: Types of Errors
 :class: note
 
-- The *irreducible error* is inherent in the data due to noise and factors beyond our control.
+- The *irreducible error* is inherent in the data due to noise and factors beyond our control (unmeasured variables).
 
 - The *reducible error* arises from shortcomings in the model and can be further broken down into:
   - *Bias*: Introduced when a model makes too simple assumptions about the data (underfitting)
   - *Variance*: The sensitivity of the model to small changes in the training data (overfitting)
 ```
 
-This closely relates to the example introduced in [](0_refresher). Let's have a another look and simulate some data with an underlying cubic polynomial. We can see that a linear regression does not capture the nuance of the cubic relationship in the data, while a 10th order model already overfits quite a lot:
+This closely relates to the example introduced in [](0_refresher). Let's have a another look and simulate some data with an underlying relationship in line with a cubic polynomial function. We can see that a linear regression does not capture the nuance of the cubic relationship in the data, while a 10th order model already overfits quite a lot:
 
 ```{code-block} ipython3
 import numpy as np
@@ -112,7 +112,7 @@ print(f"3       {mse_list[1]:.3f}")
 print(f"10      {mse_list[2]:.3f}")
 ```
 
-However, if we evaluate the same models on new, unseen data, we see that the MSE is now increasing with incrasing order:
+However, if we evaluate the same models on new, unseen data, we see that the MSE is now increasing with incrasing order of the polynomial regression model:
 
 ```{code-cell} ipython3
 :tags: [remove-input]
@@ -170,7 +170,7 @@ Two things should become apparent:
 2. The test MSEs are generally higher than the training MSEs. This is to be expected as the intial models did all, to some degree, fit to the noise in the training data.
 ```
 
-This is because the 10th order model has too much *variance* - it is too closely fit to the training data. If we fit such a model to multiple draws of our polynomial data, it will always look different:
+This is because the 10th order model has too much *variance* - it is too close to the training data. If we fit such a model to multiple draws of samples from the population with a true association consistent with the cubic order polynomial, the model's predictive performance will always look different:
 
 ```{code-cell} ipython3
 :tags: [remove-input]
