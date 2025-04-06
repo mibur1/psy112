@@ -1,0 +1,22 @@
+[{
+    "question": "Choosing k > 25 for kNN might seem unusually high. Based on the Iris dataset, which of the following are reasonable explanations for why this could still result in good performance?",
+    "type": "multiple_choice",
+    "answers": [
+        {
+            "answer": "Setosa is linearly separable and clearly distinct from the other two classes.",
+            "correct": true
+          },
+          {
+            "answer": "The dataset is relatively noise-free, making predictions from a large neighborhood more stable.",
+            "correct": true
+          },
+          {
+            "answer": "A high k-value leads to a highly flexible model that fits the data very closely.",
+            "correct": false
+          },
+          {
+            "answer": "Versicolor and Virginica are perfectly separable, so k has no influence on classification accuracy.",
+            "correct": false
+          }
+        ]
+      }]
