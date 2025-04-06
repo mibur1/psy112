@@ -17,4 +17,4 @@ myst:
 
 # <i class="fa-solid fa-arrows-to-dot"></i> K-Nearest Neighbors
 
-hello world
+Hello world

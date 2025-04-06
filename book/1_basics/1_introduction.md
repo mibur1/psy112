@@ -17,7 +17,7 @@ myst:
 
 # <i class="fa-solid fa-code"></i> What is Machine Learning?
 
-Have you ever wondered how Netflix always seems to know exactly what movie or TV show to recommend next? The secret lies in machine learning. By analyzing your viewing history, ratings, and even the habits of viewers with similar tastes, Netflix's algorithms detect patterns and predict which content you might enjoy. It’s not just random suggestions — it's a sophisticated system that processes vast amounts of data to tailor your recommendations, ensuring that your next binge-watching session feels perfectly curated just for you.
+Have you ever wondered how Netflix always seems to know exactly what movie or TV show to recommend next? The secret lies in machine learning. By analyzing your viewing history, ratings, and even the habits of viewers with similar tastes, Netflix's algorithms detect patterns and predict which content you might enjoy. It’s not just random suggestions — it's a sophisticated system that processes vast amounts of data to tailor recommendations for you, ensuring that your next binge-watching session feels perfectly curated just for you.
 
 But what is machine learning? Machine learning is a branch of artificial intelligence that enables computers to learn from data and make predictions or decisions without being explicitly programmed. Rather than relying on fixed instructions, machine learning algorithms analyze vast amounts of data to identify meaningful patterns and predict outcomes.
 
@@ -54,11 +54,11 @@ In addition to the type of learning, algorithms can also be categorized based on
 
 ## Assessing performance
 
-Assessing the performance of a machine learning model is crucial to ensure its reliability and applicability. Important evaluation metrics for this are:
+Assessing the performance of a machine learning model is crucial to ensure its accuracy and applicability. Important evaluation metrics for this are:
 
 - **Mean Squared Error (MSE)**: Measures the average squared difference between predicted and actual values (regression tasks).
-- **Accuracy**: Describes the proportion of correctly predicted outcomes (classification tasks).
+- **Missclassification Error**: Describes the proportion of incorrectly predicted class assignments (classification tasks).
 
-There are many more performance metrics (which you might already know), such as the Root Mean Squared Error (RMSE), R-Squared (R²), Precision, or a confusion matrix. You will get to know some of them in the following weeks.
+There are many more performance (accuracy) metrics (which you might already know), such as the Root Mean Squared Error (RMSE), R-Squared (R²), Precision, or a confusion matrix. You will get to know some of them in the following weeks.
 
-Additionally, techniques like *cross-validation* help estimate a model’s performance more reliably. Cross-validation splits the dataset into training and testing subsets, reducing the risk of overfitting and proving a better assessment of how the model will perform on unseen data. We will explore this topic in the [](3_resampling) session.
+In addition, techniques such as *cross-validation* help to estimate the performance of a model in an unbiased manner. Cross-validation splits the dataset into training and testing subsets, reducing the risk of overfitting and proving a better assessment of how the model will perform on unseen data. We will explore this topic in the [](3_resampling) session.
