@@ -1,21 +1,21 @@
 [{
-    "question": "Which of the following is true about of machine learning approach using this dataset?",
+    "question": "Which of the following options are true for our model and task?",
     "type": "multiple_choice",
     "answers": [
         {
-            "answer": "Supervised",
+            "answer": "Supervised Learning",
             "correct": true
         },
         {
-            "answer": "Unsupervied",
+            "answer": "Unsupervied Learning",
             "correct": false
         },
         {
-            "answer": "Classification algorithm",
+            "answer": "Classification Model",
             "correct": true
         },
         {
-            "answer": "Regression algorithm",
+            "answer": "Regression Model",
             "correct": false
         }
     ]

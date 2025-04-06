@@ -1,6 +1,6 @@
 [
     {
-        "front": "Could you think of any advantages and disadvantages for the Validation Set Approach?",
-        "back": "Advantage: Requires low computing power.\n\nDisadvantage: Uses only a small subset of data for training and testing, which may lead to high variance and unreliable performance estimates."
+        "front": "Can you think of any disadvantages of the validation set approach? (click me)",
+        "back": "A key disadvantage of the validation set approach is that its performance estimates can have high variance. This means that the results may vary significantly depending on which data points end up in the training set versus the validation set."
     }
 ]

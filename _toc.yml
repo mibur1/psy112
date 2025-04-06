@@ -7,6 +7,7 @@ root: book/introduction
 parts:
 - caption: Machine Learning Basics
   chapters:
+    - file: book/1_basics/0_refresher
     - file: book/1_basics/1_introduction
     - file: book/1_basics/2_bias_variance
     - file: book/1_basics/3_resampling

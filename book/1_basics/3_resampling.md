@@ -12,49 +12,44 @@ kernelspec:
   name: python3
 myst:
   substitutions:
-    ref_test: 1
+    hyperparam: 1
 ---
 
 # <i class="fa-solid fa-dice"></i> Resampling Strategies
-In the world of data science and machine learning, having access to large datasets is often a luxury rather than the norm. However, to build robust predictive models, we need effective ways to assess model performance and minimize the risk of overfitting. This is where resampling methods come into play.
 
-Resampling methods involve **repeatedly drawing samples** from an available dataset to simulate independent datasets. These simulated sets help assess how well a trained model will perform on future data. While splitting data into training and test sets is a common practice, the results can vary depending on how the split is made. Resampling techniques provide a more reliable way to estimate model performance, reducing variability and improving accuracy.
+As neuropsychologists, you will be well aware of the challenges involved in data collection — time, cost, and the complexities of experimental design often make large datasets hard to come by. However, robust predictive modeling is critical not only because extensive datasets can be rare, but also because ensuring that models generalize well to new data is often an essential question.
 
-The two mostly used resampling methods are:
-- **Cross Validation** - creates non-overlapping substests that can be used to estimate the test error assocciated with a model
-- **Bootstrapping** - samples with replacement, resulting in (partly) overlapping samples
+Resampling methods offer a powerful approach to assess model performance and mitigate overfitting. Rather than relying on a single train-test split, which can yield performance estimates that vary significantly depending on the split, resampling techniques repeatedly draw samples from your data. This process simulates multiple independent training and test sets, providing a more stable and reliable evaluation of your model.
 
-```{admonition} Summary
+
+```{admonition} Resampling Strategies
 :class: hint
 
-Resampling methods involve:
-1. Repeatedly drawing a sample from an existing dataset
-2. fit the model to all resulting subsets and predict a held out amount of data
-3. Examine all of the refitted models and draw appropriate conclusions
+The two most widely used resampling methods are:
+
+- *Cross validation*: Creating non-overlapping subsets for training and testing
+- *Bootstrapping*: Sampling with replacement, resulting in (partly) overlapping samples
 ```
 
-## **Cross-Validation**
-### *Todays data - Iris dataset*
-Let's look at how to apply the validation set approach using data.
-The data set consists of 50 samples from each of three species of Iris (Iris setosa, Iris virginica and Iris versicolor). Four features were measured from each sample: the length and the width of the sepals and petals, in centimeters.
+## The data
+
+We will use a dataset you are already familiar with from last semester: The [Iris](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html) dataset which contains 150 samples from three species of the iris plant (iris setosa, iris virginica and iris versicolor). Four features were measured: the length and the width of the sepals and petals, in centimeters.
 
 ```{code-cell} 
-# import packages
+import seaborn as sns
+import pandas as pd
 from sklearn import datasets
-import matplotlib.pyplot as plt
 
-# load dataset
-iris= datasets.load_iris()
+# Get data
+iris = datasets.load_iris(as_frame=True)
+df = iris.frame
+df['class'] = pd.Categorical.from_codes(iris.target, iris.target_names)
 
-# Lets visualize two of our features to get an impression of the data
-fig, ax = plt.subplots()
-scatter = ax.scatter(iris.data[:, 0], iris.data[:, 1], c=iris.target)
-ax.set(xlabel=iris.feature_names[0], ylabel=iris.feature_names[1])
-fig= ax.legend(
-    scatter.legend_elements()[0], iris.target_names, loc="lower right", title="Classes"
-)
+# Plot data
+sns.scatterplot(data=df, x='sepal length (cm)', y='sepal width (cm)', hue="class");
 ```
-The goal of the algorithm is to classify the flowers based on our features. As we only have 150 datapoints for this prediction, we can use resampling methods to avoid overfitting and get a more stable result.
+
+The goal of our model is to classify the flowering plants based on two features shown in the plot (sepal length and width). Which of the following is true about the model and task at hand?
 
 ```{code-cell} ipython3
 :tags: [remove-input]
@@ -62,311 +57,217 @@ from jupyterquiz import display_quiz
 display_quiz('quiz/iris.json')
 ```
 
-### Validation Set approach
+## Validation Sets
 
 ```{margin}
-Hyperparameter are paramateres that are not learned from the data but set by the scientist before the training process begin. T
+Hyperparameters are parameters that are not learned from the data but set by the researcher before the training process.
 ```
 
-In the simplest approach of cross-validation the dataset is **randomly split into two independent subsets**:
-- *Training Set*: Used to train the model by learning patterns and relationships in the data
-- *Validation Set*: Used to assess model performance across different models and hyperparameter choices. It therefore provides an estimation of the test error.
+The simplest form of cross validation is to simply split the dataset into two parts:
+
+- *Training Set*: Part of the data used for trainin
+- *Validation Set*: Part of the data used for testing (e.g. across different models and hyperparameters{{hyperparam}})
+
+
+```{figure} figures/ValidationSet.drawio.png
+:name: VS
+:alt: Validation Set approach
+:align: center
+
+The validation set splits the dataset into a training and a testing set (these do not necessarily need to be of equal size).
+```
+
+The training and testing set neither need to be of equal size nor do they need to be contiguous blocks in the data. Let's try the validation set approach on the `Iris` data:
+
+1.  Define features and target data
 
 ```{code-cell} ipython3
-:tags: [remove-input]
-## creating a nice looking figure to visualize the spliiting in validation set approach
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
+iris = datasets.load_iris(as_frame=True)
 
-# Create figure and axis
-fig, ax = plt.subplots(figsize=(8, 3), dpi=200)
-ax.set_xlim(0, 10)
-ax.set_ylim(0, 6)
-ax.axis("off")
-
-# Whole dataset
-ax.add_patch(patches.Rectangle((1, 4), 8, 1, color='gray', alpha=0.6))
-ax.text(5, 4.5, "Whole Data Set", ha='center', va='center', fontsize=12, color='black')
-
-# Validation set
-ax.add_patch(patches.Rectangle((1, 2), 4, 1, color='lightcoral', alpha=0.6))
-ax.text(3, 2.5, "Validation Set", ha='center', va='center', fontsize=12, color='black')
-
-# Training set
-ax.add_patch(patches.Rectangle((5, 2), 4, 1, color='lightblue', alpha=0.6))
-ax.text(7, 2.5, "Training Set", ha='center', va='center', fontsize=12, color='black')
-
-# Arrow from Whole Data Set to Training/Validation Set
-ax.annotate('', xy=(3, 4), xytext=(3, 3), arrowprops=dict(arrowstyle='->', color='black'))
-ax.annotate('', xy=(7, 4), xytext=(7, 3), arrowprops=dict(arrowstyle='->', color='black'))
-# to Micha: Arrows even needed??
-
-# Title
-ax.text(5, 5.5, "Validation Set Approach", ha='center', va='center', fontsize=14, fontweight='bold')
-
-plt.show()
+# Features: sepal length and width; target: type of flower
+X = df[["sepal length (cm)", "sepal width (cm)"]] 
+y = df["target"]
 ```
-Lets try this with our Iris dataset.
 
-1.  As a first step, we need to **define the Target(y) and Features(X)**.
+2. Split the data into training and test samples
 
-```{code-cell}
-# thanks to Scikit-Learn, the Iris dataset is already predefined and consists of 
-# defined Features and Target, which we now can use 
-X, y = datasets.load_iris(return_X_y=True) 
-```
-2. **Split** the data into training and test sample
-
-```{code-cell}
+```{code-cell} ipython3
 from sklearn.model_selection import train_test_split
 
-# sample  a training set while holding out 40% of the data for testing the classifier
-X_train, X_test, y_train, y_test= train_test_split(X,y, test_size=0.4, random_state=0)
-```
-**Hands on**: 
-Please split the data into training and test sample. The test sample should contain 73% of the data.
-<iframe src="https://trinket.io/embed/python3/39cc2749b878" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
-
-
-3. **Fit** the model
-As we predict quantitaive outcome, we need a classification model. The model learns a decision boundary to separate classes in the feature space.
-
-```{margin}
-A high C will try to classify all training points correctly and leads to a complex decision boundary.
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=42)
 ```
 
-```{code-cell}
+3. Fit the model (we use a support vector classifier which you will learn about later in the seminar)
+
+```{code-cell} ipython3
 from sklearn import svm
 
-# Using a support vector machine classifier with the training data
-# C as hyperparameter/Regularization parameter
-clf = svm.SVC(kernel='linear', C=1).fit(X_train, y_train)
+model = svm.SVC(kernel='linear')
+fit = model.fit(X_train, y_train)
 ```
 
-4. **Evaluate** model performance
-```{code-cell}
-clf.score(X_test, y_test)
+4. Evaluate model performance
 
+```{code-cell} ipython3
+fit.score(X_test, y_test)
 ```
-In the case of classification, we evaluate model performance using accuracy. An accuracy of ~97% means that, on average, the model correctly predicts 97 out of 100 test samples.
+
+The `score()` method returns the accuray of our predictions. In this case, our algorithm correctly predicted the species of the flower in 85% of cases.
 
 
 ```{code-cell} ipython3
 :tags: [remove-input]
 
 from jupytercards import display_flashcards
-display_flashcards('quiz/validation_set.json')
-
+display_flashcards('quiz/validation_set.json');
 ```
+
+**Hands on**: In the editor below, perform classification for two splits in the the data. First, use 80% of the data for testing and 20% for training, and second use 20% for training and 80% for testing. Before evaluation the results, think about what kind of results you would expect from the two models. Which do you think will perform better?
+
+<iframe src="https://trinket.io/embed/python3/48c2802e1e16" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
 
 ```{admonition} Summary
 :class: hint
 
-While the Validation Set Approach is a quick and easy way to check how well a model performs, it has a major flaw: it puts all its trust in a **single data split**. Imagine training a model, evaluating it once, and calling it a day — what if that split was just lucky (or unlucky)? A bad split can doom a great model, while a lucky one might trick us into thinking a weak model is stronger than it is.
+The validation set approach is a quick and easy way to check how well a model performs. However, it has a major flaw: it puts all its trust in a single data split which can doom a great model or trick us into thinking a weak model performs better than it actually does.
 ```
 
-### k-fold Cross Validation
-To get a more reliable and robust performance estimate, we need something smarter— something that doesn’t leave our results up to chance. Rather than worrying about which split of data to use for training versus validation, we'll use them all in turn.
+## Cross Validation (CV)
 
-In k-fold cross validation we randomly dive the dataset into k equal-sized folds. One fold is designated at the validation set, while the remaining **k-1** samples are the training sets. The fitting process is repeated **k-times**, each time using a different fold as the validation set. At the end of the process, we compute the **average** score across all validation sets to obtain a more reliable estimate of the model's overall performance.
+### K-fold CV
 
+To get a more reliable and robust performance estimate, we need something smarter — something that doesn’t leave our results up to chance. Rather than worrying about if the split of data used for training and validation is biased, we will perform this splitting multiple times and use all of the splits in turn.
+
+In k-fold CV we randomly dive the dataset into $k$ equal-sized folds. One sample is designated at the validation set, while the remaining $k-1$ samples are the training sets. The fitting process is repeated $k$-times, each time using a different fold as the validation set. At the end of the process, we can compute the average accuracy across all validation sets to obtain a more reliable estimate of the model's overall performance.
+
+```{figure} figures/CV.drawio.png
+:name: CV
+:alt: Cross validation
+:align: center
+
+K-fold cross validation splits the dataset into $k$ equally sized parts and then trains the model on all posible combinations of it, keeping the proportion of train/test data constant.
+```
+
+Let`s try it on our data:
+
+
+1. Defining *k*
 
 ```{code-cell} ipython3
-:tags: [remove-input]
-
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-# documentation:
-# https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.Rectangle.html
-
-
-# defining k 
-k=5
-
-# Create figure and axis
-fig, ax = plt.subplots(figsize=(8, 3))
-ax.set_xlim(0, 13)
-ax.set_ylim(0, k+4)
-ax.axis("off")
-
-# Whole dataset
-ax.add_patch(patches.Rectangle((1, 8), 10, 1, color='gray', alpha=0.6))
-ax.text(6, 8.5, "Whole Data Set", ha='center', va='center', fontsize=12, color='black')
-
-# k=1 
-# Rectangle(xy, width, height...)
-ax.add_patch(patches.Rectangle((1, 2), 2, 1, facecolor='lightcoral', alpha=0.6))        # Valdiation set
-ax.add_patch(patches.Rectangle((3, 2), 8, 1, facecolor='lightblue', alpha=0.6))         # Training set 
-
-# k=2 
-ax.add_patch(patches.Rectangle((1, 3), 2, 1, facecolor='lightblue',  alpha=0.6))  # First training part
-ax.add_patch(patches.Rectangle((3, 3), 2, 1, facecolor='lightcoral',  alpha=0.6))  # Validation part
-ax.add_patch(patches.Rectangle((5, 3), 6, 1, facecolor='lightblue', alpha=0.6))   # Remaining training part
-
-# k=3
-ax.add_patch(patches.Rectangle((1, 4), 4, 1, facecolor='lightblue',  alpha=0.6)) 
-ax.add_patch(patches.Rectangle((5, 4), 2, 1, facecolor='lightcoral',  alpha=0.6))   
-ax.add_patch(patches.Rectangle((7, 4), 4, 1, facecolor='lightblue', alpha=0.6))  
-
-# k=4
-ax.add_patch(patches.Rectangle((1, 5), 6, 1, facecolor='lightblue',  alpha=0.6)) 
-ax.add_patch(patches.Rectangle((7, 5), 2, 1, facecolor='lightcoral',  alpha=0.6))   
-ax.add_patch(patches.Rectangle((9, 5), 2, 1, facecolor='lightblue', alpha=0.6))  
-
-# k=5
-ax.add_patch(patches.Rectangle((1, 6), 8, 1, facecolor='lightblue',  alpha=0.6)) 
-ax.add_patch(patches.Rectangle((9, 6), 2, 1, facecolor='lightcoral',  alpha=0.6))   
-
-
-# Arrow from Whole Data Set to Training/Validation Set
-ax.annotate('', xy=(6, 7), xytext=(6, 8), arrowprops=dict(arrowstyle='<-', color='black'))
-
-plt.show()
-# probably not the most efficient way! Maybe putting it in a loop? 
-```
-
-Let`s also try this method on our dataset. 
-
-
-1. Defining Target and Features
-```{code-cell}
-X, y = datasets.load_iris(return_X_y=True) 
-```
-
-```{margin}
-k is also a hyperparameter!
-```
-
-2. Choosing *k*
-```{code-cell}
-from sklearn.model_selection import KFold
-# Lets just start with k=5
+from sklearn.model_selection import KFold, cross_val_score
 k_fold = KFold(n_splits = 5)
 ```
 
-3. Choosing and creating a model 
+2. Defining and evaluating the model
 
+```{code-cell} ipython3
+model = svm.SVC(kernel='linear')
+scores = cross_val_score(model, X, y, cv=k_fold) 
 
-TO MICHA: Here, we could also use a DecisionTreeClassifier since it is computationally cheaper, making it more suitable for multiple repetitions, as required in K-Fold. Also for SVM we need to loop through each iteration to get the training data set as an input parameter from SVM. However, introducing two classifiers might be quite confusing for them! Especially if the exercise will then ask for regression models 
-
-If we choose **Decision Tree**:
-While we've previously used Support Vector Machines (SVMs), we might also consider a Decision Tree Classifier for K-Fold Cross-Validation. Decision Trees are computationally cheaper, making them more efficient for multiple training iterations, as required in K-Fold. 
-
-```{code-cell}
-from sklearn.tree import DecisionTreeClassifier
-
-clf = DecisionTreeClassifier(random_state=42) 
+print(f"Average accuracy:    {scores.mean()}")
+print(f"Indidual accuracies: {scores}")
 ```
 
-4. Evaluate the model
-```{code-cell}
-from sklearn.model_selection import cross_val_score
+If we are interested in the exact models, we can also run the training and evaluation explicitly which allows us to save the models:
 
-scores = cross_val_score(clf, X, y, cv = k_fold) 
+```{code-cell} ipython3
+model = svm.SVC(kernel='linear')
+score_list = []
+model_list =  []
 
-# print the score for each iteration and the average score over all folds
-print("Cross Validation Scores: ", scores)
-print("Average CV Score: ", scores.mean())
+for train_index, test_index in k_fold.split(X):
+    X_train, X_test = X.iloc[train_index], X.iloc[test_index] # iloc because X is a df
+    y_train, y_test = y.iloc[train_index], y.iloc[test_index] # iloc because y is a df
+
+    model.fit(X_train, y_train)
+    score = model.score(X_test, y_test)
+    
+    score_list.append(score)
+    model_list.append(model)
+
+print(f"Best performing model in split {score_list.index(max(score_list))}.")
 ```
-The averaged model accuracy is about 91%. 
 
-3. Choosing, creating and evaluation the model
-
-
-If we choose **SVM**
-As introduced in the Validation Set Approach, we can once again use a Support Vector Machine (SVM) Classifier. However, unlike the Validation Set Approach, where we have a single fixed training split, the K-Fold method dynamically changes the training and validation sets in each iteration.
-
-```{code-cell}
-from sklearn import svm
-
-# Initialize model
-clf = svm.SVC(kernel='linear', C=1)
-
-# list to store the scores
-scores=[]
-
-# Iterate over each fold and dynamically define the training set 
-for train_index, val_index in k_fold.split(X):
-    X_train, X_val = X[train_index], X[val_index]
-    y_train, y_val = y[train_index], y[val_index]
-
-    # Train model on current fold
-    clf.fit(X_train, y_train)
-
-    # Evaluate on validation set
-    score = clf.score(X_val, y_val)
-    scores.append(score)                     # Append score to list
-    print(f"Validation Score : {score}")
-
-# print average CV score
-print("Average CV Score: ", sum(scores) / len(scores))
-```
-The averaged model accuracy is about 95%. 
-
-```{admonition} Validation Set vs. k-fold Cross Validationach approach
+```{admonition} Validatation set vs. k-fold
 :class: note
 
-Comparing these 2 Cross Validation approaches, it can be observed that the validation set approach seems to show a better accuracy. But does this reflects the reality?
-- The Validation Set Approach often **overestimates** accuracy since it tests the model on a single split, leading to potential overfitting. 
-- In contrast, K-Fold Cross-Validation provides a **more reliable** assessment by evaluating multiple splits, reducing bias, and offering a realistic performance estimate. 
-- If K-Fold accuracy is significantly lower, it indicates that the initial estimate was overly optimistic. 
-
-Therefore, K-Fold is preferred as it provides a more trustworthy measure of real-world performance.
+Comparing the two approaches, we see that the validation set approach shows a higher accuracy compared to CV. This tells us that our initial estimates were probably overly optimistic.
 ```
 
-**Hands on**:
-Please change k. 
+**Try it yourself**: Change the number of folds $k$ and observe how the predicitions change. What do you feel like is a good tradeoff between bias and variance?
 
-<iframe src="https://trinket.io/embed/python3/29cdfb10f7f9" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+<iframe src="https://trinket.io/embed/python3/679ce3200f38" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
 
-
-```{admonition} The big choice of k
+```{admonition} The choice of $k$
 :class: note 
 
-Choosing an appropriate k involves a trade-off between bias, variance, and computational cost.
-A higher k generally provides a more stable and reliable estimate but comes with higher computational effort, making it often impractical in real-world applications.
-
-Generally speaking, **k = 5 or k = 10** is most common, as it balances computation time and reliability.
+Choosing an appropriate k involves a tradeoff between bias, variance, and computational cost. A higher k generally provides a more stable and reliable estimate but comes with higher computational cost and also requires a sufficiently big dataset to still have a representative test set.
+ 
+Generally speaking, $k=5$ or $k=10$ are common choices.
 ```
 
+### Leave-one-out CV (LOOCV)
 
-```{margin}
-In LOOCV k=n!
+LOOCV is a special case of k-fold cross validation, where $k$ equals the number of observations. In LOOCV, the model is trained on all but one data point, and the remaining single observation is used for validation. This process repeats for each data point, ensuring every observation is used for testing exactly once. 
+
+While LOOCV provides a low-bias estimate, it is computationally expensive and may lead to high variance in model performance. The implementation is fairly similar, we just need to change the CV from `KFold()` to `LeaveOneOut()`:
+
+```{code-cell} ipython3
+from sklearn.model_selection import LeaveOneOut
+
+model = svm.SVC(kernel='linear')
+loocv = LeaveOneOut()
+
+scores = cross_val_score(model, X, y, cv = loocv)
+
+print(f"Average accuracy:    {scores.mean()}")
+print(f"Indidual accuracies: {scores}")
 ```
 
-### Leave-one-out Cross Validation (LOOCV)
-LOOCV is a special case of K-Fold Cross-Validation, where k equals the number of observations. In LOOCV, the model is trained on all but one data point, and the remaining single observation is used for validation. This process repeats for each data point, ensuring every observation is used for testing exactly once. 
+## Side Note: Bootstrapping
 
-While LOOCV provides a low-bias estimate, it is computationally expensive and may lead to high variance in model performance. 
+Bootstrapping is a resampling technique used to estimate the sampling distribution of an estimator by repeatedly drawing samples — *with replacement* — from the original dataset. In the context of machine learning, bootstrapping is often used to assess the variability and uncertainty of model performance (for the purpose of estimating the prediction accuracies, k-fold CV is generally preferred). Unlike traditional cross-validation, which partitions the dataset into distinct training and validation sets, bootstrapping creates multiple training sets by sampling the data with replacement. In each iteration, the model is trained on the bootstrap sample, and the out-of-bag (OOB) samples (i.e., the observations not included in that particular bootstrap sample) are used as a surrogate for the validation set. Generally, a larger number of iterations would be performed in real applications, but we here outline the concept with 10 iterations:
 
-In Python, the Leave One Out approach is very similiar to the k-fold procedure. Only the Cross validation method is changed to `LeaveOneOut()`. 
+```{code-cell} ipython3
+import numpy as np
+import pandas as pd
+from sklearn import datasets, svm
+from sklearn.utils import resample
 
-```{code-cell}
-# import packages
-from sklearn import datasets
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.model_selection import LeaveOneOut, cross_val_score
+# Load the data
+iris = datasets.load_iris(as_frame=True)
+df = iris.frame
 
-# define target and features
-X, y = datasets.load_iris(return_X_y=True)
+n_iterations = 10
+scores = []
 
-# define classifier model
-clf = DecisionTreeClassifier(random_state=42)
+for i in range(n_iterations):
+    # Create a bootstrap sample
+    bootstrap_sample = resample(df, replace=True, n_samples=len(df), random_state=i)
+    
+    # Determine the out-of-bag (OOB) samples: rows not in the bootstrap sample.
+    oob_indices = df.index.difference(bootstrap_sample.index)
+    
+    # If no OOB samples are available, skip this iteration.
+    if len(oob_indices) == 0:
+        print(f"Iteration {i+1}: No out-of-bag samples, skipping iteration.")
+        continue
+    
+    oob_sample = df.loc[oob_indices]
+    
+    # Define features and target for training and testing
+    X_train = bootstrap_sample[["sepal length (cm)", "sepal width (cm)"]]
+    y_train = bootstrap_sample["target"]
+    X_test = oob_sample[["sepal length (cm)", "sepal width (cm)"]]
+    y_test = oob_sample["target"]
+    
+    # Train and evaluate the model
+    model = svm.SVC(kernel='linear')
+    model.fit(X_train, y_train)
+    
+    score = model.score(X_test, y_test)
+    scores.append(score)
+    print(f"Iteration {i+1}: Accuracy = {score:.3f}")
 
-# define Cross Validatin approach
-loo= LeaveOneOut()
-
-# fit model
-scores = cross_val_score(clf, X, y, cv = loo)
-
-# Print scores
-print("Average CV Score: ", scores.mean())
+print("\nMean Accuracy:", np.mean(scores))
 ```
-
-
-## **Bootstrapping**
-Bootstrapping is a resampling technique in statistics and machine learning that repeatedly draws samples **with replacement** from a dataset to estimate a population parameter. It can be used to quantify the uncertainty associated with a given estimator or statistical learning method. 
-
-As seen in Cross-Validation, Bootstrapping also uses training and validation sets. The training sets consist of samples drawn with replacement, while the original dataset serves as the validation set.
-
-Now let’s look at how to implement bootstrap sampling in python.

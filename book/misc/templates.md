@@ -172,3 +172,126 @@ IFrame('https://trinket.io/embed/python3/3fe4c8f3f4', 700, 500)
 
 <iframe width="560" height="315" src="https://mfr.ca-1.osf.io/render?url=https://osf.io/sqcvz/?direct%26mode=render%26action=download%26mode=render" frameborder="0" allowfullscreen></iframe>
 
+- Interactive plots (not working, I now started to use plotly):
+
+```{code-cell}
+import ipywidgets as widgets
+from ipywidgets import interact
+
+# Create some sample data
+np.random.seed(42)
+x = np.linspace(-5, 5, 30)
+noise = np.random.normal(0, 2, 100)
+y = (x**3 + np.random.normal(0, 15, size=x.shape)) / 50
+df = pd.DataFrame({'x': x, 'y': y})
+
+# Define a function that updates the plot based on the selected polynomial order
+def update_plot(Order=10):
+    fig, ax = plt.subplots(figsize=(6, 4))
+    sns.regplot(data=df, x="x", y="y", ax=ax, order=Order, ci=None)
+    ax.set_xlim(-5, 5)
+    ax.set_ylim(-3, 3)
+    plt.show()
+
+# Create an interactive slider for the polynomial order
+interact(update_plot, Order=widgets.IntSlider(min=1, max=50, step=1, value=1));
+
+```
+
+```{code-cell} ipython3
+:tags: [remove-input]
+
+import numpy as np
+import plotly.graph_objs as go
+from plotly.subplots import make_subplots
+
+# Parameters
+n_steps = 30               
+initial_seed = 42 
+orders = [1, 3, 10]
+titles = ["1st order model", "3rd order model", "10th order model"]
+
+# Fixed x values and x_fit for regression curve evaluation
+x = np.linspace(-3, 3, 30)
+x_fit = np.linspace(-3, 3, 400)
+
+# Precompute data for each slider step (each seed)
+seed_data = {}
+for i in range(n_steps):
+    seed = initial_seed + i
+    np.random.seed(seed)
+    # Generate new y data based on the current seed
+    y = (x**3 + np.random.normal(0, 15, size=x.shape)) / 10
+    seed_data[seed] = {}
+    for order in orders:
+        coeffs = np.polyfit(x, y, order)
+        y_fit = np.polyval(coeffs, x_fit)
+        seed_data[seed][order] = {'y': y, 'y_fit': y_fit}
+
+# Create the figure with 3 subplots (one per model order)
+fig = make_subplots(rows=1, cols=3, subplot_titles=titles)
+
+# For the initial slider step (seed = initial_seed), add scatter and regression traces for each subplot.
+current_seed = initial_seed
+for j, order in enumerate(orders):
+    # Scatter trace: raw data
+    scatter_trace = go.Scatter(
+        x=x,
+        y=seed_data[current_seed][order]['y'],
+        mode='markers',
+        marker=dict(size=10, color='lightgrey', line=dict(color='gray', width=2)),
+        showlegend=False
+    )
+    # Regression line trace
+    line_trace = go.Scatter(
+        x=x_fit,
+        y=seed_data[current_seed][order]['y_fit'],
+        mode='lines',
+        line=dict(width=3, color='#4c72b0'),
+        showlegend=False
+    )
+    fig.add_trace(scatter_trace, row=1, col=j+1)
+    fig.add_trace(line_trace, row=1, col=j+1)
+
+# Create slider steps.
+steps = []
+for i in range(n_steps):
+    seed = initial_seed + i
+    new_y = [
+        seed_data[seed][orders[0]]['y'],
+        seed_data[seed][orders[0]]['y_fit'],
+        seed_data[seed][orders[1]]['y'],
+        seed_data[seed][orders[1]]['y_fit'],
+        seed_data[seed][orders[2]]['y'],
+        seed_data[seed][orders[2]]['y_fit']
+    ]
+    step = dict(
+        method="restyle",
+        args=[{"y": new_y}],
+        label=f"{seed}"
+    )
+    steps.append(step)
+
+# Define the slider
+sliders = [dict(
+    active=0,
+    currentvalue={"prefix": "Random Seed: "},
+    pad={"t": 50},
+    steps=steps
+)]
+
+# Update the layout: setting axis ranges and adding the slider
+fig.update_layout(
+    sliders=sliders,
+    height=400,
+    autosize=True,
+    margin=dict(l=10, r=10, t=50, b=20),
+)
+
+# Adjust x and y axes ranges for each subplot
+for col in range(1, 4):
+    fig.update_xaxes(title_text="x", range=[-3.5, 3.5], row=1, col=col, fixedrange=True, gridwidth=1, zerolinewidth=1)
+    fig.update_yaxes(title_text="y", range=[-4, 4], row=1, col=col, fixedrange=True, gridwidth=1, zerolinewidth=1)
+
+fig.show()
+```
