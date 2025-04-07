@@ -25,3 +25,9 @@ parts:
     - file: book/2_models/8_Trees
     - file: book/2_models/9_Neural_networks
     - file: book/2_models/10_PCA
+
+- caption: Additional Materials
+  chapters:
+    - file: book/solutions/solutions
+      sections:
+        - file: book/solutions/solution_1

@@ -29,17 +29,19 @@ html:
   use_issues_button: true
   use_repository_button: true
   baseurl: https://mibur1.github.io/psy112
-  extra_css:
-    - _static/custom.css
-
+  
 sphinx:
   html_context:
-    default_mode: light
+    default_mode: dark
   recursive_update: true
+  extra_css:
+    - _static/custom.css
+  extra_javascript:
+    - _static/custom.js
   config:
     html_js_files:
       - "https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"
-      
+    
 # Google colab launch button
 launch_buttons:
   colab_url: "https://colab.research.google.com"
