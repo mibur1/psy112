@@ -11,5 +11,4 @@ jupytercards
 statsmodels
 abess
 mlxtend
-generalized-additive-models
 pygam
