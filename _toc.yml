@@ -30,4 +30,4 @@ parts:
   chapters:
     - file: book/solutions/solutions
       sections:
-        - file: book/solutions/solution_1
+        - file: book/solutions/solutions_1
