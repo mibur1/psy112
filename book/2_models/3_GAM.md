@@ -159,21 +159,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 from patsy import dmatrix
 
-# Wertebereich für BMI
 X = np.linspace(df["bmi"].min(), df["bmi"].max(), 200)
 
-# df-Werte, die wir vergleichen wollen
+# degrees of freedom values 
 dfs = [3, 6, 15]
 
 # Plot
 fig, axes = plt.subplots(1, 3, figsize=(18, 4), sharey=True)
 
 for i, df_val in enumerate(dfs):
-    # Designmatrix berechnen
+    
     splines = dmatrix(f"bs(x, df={df_val}, degree=3, include_intercept=False)", 
                       {"x": X}, return_type='dataframe')
     
-    # Zeichnen
+    
     for col in splines.columns:
         axes[i].plot(X, splines[col])
     axes[i].set_title(f"B-Splines (df={df_val})")
