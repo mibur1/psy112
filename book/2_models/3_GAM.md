@@ -44,8 +44,8 @@ Importantly, GAMs learn non-linear relationships in the data such that:
 
 ```{code-cell} ipython3
 :tags: ["remove-input"]
-from jupyterquiz import display_quiz
-display_quiz("quiz/GAM.json", shuffle_answers=False)
+#from jupyterquiz import display_quiz
+#display_quiz("quiz/GAM.json", shuffle_answers=False)
 ```
 ------------------------------------------------
 ## *Todays data - Diabetes dataset*
@@ -75,7 +75,9 @@ As you're already familiar with from previous weeks, let's begin by splitting th
 from sklearn.model_selection import train_test_split
 
 # Split the data into training and test sets
-X_train, X_test, y_train, y_test = train_test_split(X.values, y, test_size=0.3, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+
 ```
 
 
@@ -120,76 +122,218 @@ plt.tight_layout()
 plt.show()
 
 ```
-From the plots, we can see that a simple linear regression line often does not fully capture the complexity of the relationships between the features and the target variable. This suggests that a more flexible modeling approach—like GAMs—may be better suited for this dataset.- not for all feautes linear regression seems to 
+From the plots, we can see that a simple linear regression line often does not fully capture the complexity of the relationships between the features and the target variable. This suggests that a more flexible modeling approach—like GAMs—may be better suited for this some of this features.
+
+
 Lets try it.
 
 ------------------------------------------------
 ## GAM 
-`pygam` is a user-friendly Python library for fitting Generalized Additive Models (GAMs), allowing flexible, smooth modeling of nonlinear relationships without requiring manual setup of spline bases or complex statistical details.
-
-In `pygam`we have 3 different building blocks for our GAM formula:
-- `s()` - stands for **spline**, and is used when you suspect a nonlinear relationship between a feature and the target. pygam will learn a smooth curve from the data.
-- `l()` -  the **linear** term, used when the relationship appears to be approximately straight. It keeps the model simple and more interpretable.
-- `f()` -   stands for **factor**, and is used when the feature is categorical (e.g. binary variables like sex, or multi-class variables).
+In theory, building a Generalized Additive Model (GAM) in Python should be straightforward. There are even libraries specifically created for this purpose, such as:
+- [pygam](https://pygam.readthedocs.io/en/latest/) is user-friendly, but it does not work with newer versions of `numpy` and `scikit-learn` (due to outdated dependencies and lack of active maintenance)
+- [generalized-additive-models]("https://github.com/tommyod/generalized-additive-models/tree/main") promising newer project, but it is still experimental, has an unstable API, and depends on specific versions of libraries
 
 
-Look at the plot above:
+As a result, both tools can cause unexpected errors, environment conflicts, and difficult debugging. To avoid dependency issues and gain more control, we’ll take a hybrid approach:
+
+- we use `patsy` to define spline basis functions 
+- we use `sklearn`s `Linear Regression`to fit the model
+
+```{margin}
+B-splines are flexible, piecewise-polynomial curves
+``` 
+This gives us full control over the model terms, and allows us to focus on each *f(x)* function individually using B-splines with independently adjustable degrees of freedom (`df`). 
+
+### What does `df` means in Splines ?
+The `df` parameter controls the flexibility of the spline. It roughly determines how many bends or "wiggles" the function can make:
+- Low `df` --> smoother, more rigid curve
+- High `df` --> more flexible
+
+
+You can think of it as: *How many independent patterns is the model allowed to detect?*. As always, be mindful of the risk of overfitting when the flexibility is too high.
+
+```{code-cell} python3
+:tags: ["remove-input"]
+
+import numpy as np
+import matplotlib.pyplot as plt
+from patsy import dmatrix
+
+# Wertebereich für BMI
+X = np.linspace(df["bmi"].min(), df["bmi"].max(), 200)
+
+# df-Werte, die wir vergleichen wollen
+dfs = [3, 6, 15]
+
+# Plot
+fig, axes = plt.subplots(1, 3, figsize=(18, 4), sharey=True)
+
+for i, df_val in enumerate(dfs):
+    # Designmatrix berechnen
+    splines = dmatrix(f"bs(x, df={df_val}, degree=3, include_intercept=False)", 
+                      {"x": X}, return_type='dataframe')
+    
+    # Zeichnen
+    for col in splines.columns:
+        axes[i].plot(X, splines[col])
+    axes[i].set_title(f"B-Splines (df={df_val})")
+    axes[i].set_xlabel("BMI")
+    axes[i].grid(True)
+
+axes[0].set_ylabel("Basis Function Value")
+plt.suptitle("Comparison of B-spline Basis Functions (on BMI)", fontsize=14)
+plt.tight_layout()
+plt.show()
+``` 
+This plot shows B-spline basis functions for the feature `BMI`. Each curve is active in a local region and **contributes to the prediction only in that area**. The functions overlap to ensure smooth transitions. The model learns how much to weight each of them.
+Together, they form the final smooth prediction curve. As you can see, the number of curves depends on the `df`.
+
+
+Below you can see how the spline-based function looks when applied to our data. A lower `df` results in a smoother, simpler fit, while a higher `df` allows the model to capture more complex patterns
+
+```{code-cell} ipython3
+:tags: ["remove-input"]
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.datasets import load_diabetes
+from sklearn.linear_model import LinearRegression
+from patsy import dmatrix
+
+# Load data
+diabetes = load_diabetes(as_frame=True)
+df = diabetes.frame.copy()
+
+# Sort data for smoother plotting
+df_sorted = df.sort_values("bmi").reset_index(drop=True)
+X_vals = df_sorted["bmi"].values.reshape(-1, 1)
+y_vals = df_sorted["target"].values
+
+# Plot settings
+fig, axes = plt.subplots(1, 3, figsize=(18, 5), sharey=True)
+df_values = [3, 6, 15]
+
+for ax, df_val in zip(axes, df_values):
+    # Build spline design matrix
+    X_spline = dmatrix(
+        f"bs(bmi, df={df_val}, degree=3, include_intercept=False)",
+        {"bmi": X_vals.ravel()},
+        return_type="dataframe"
+    )
+
+    # Fit linear model on spline-expanded features
+    model = LinearRegression()
+    model.fit(X_spline, y_vals)
+    y_pred = model.predict(X_spline)
+
+    # Plot
+    sns.scatterplot(x=X_vals.ravel(), y=y_vals, alpha=0.3, ax=ax)
+    ax.plot(X_vals.ravel(), y_pred, color="red", label=f"Spline Fit (df={df_val})")
+    ax.set_title(f"Spline fit on BMI (df={df_val})")
+    ax.set_xlabel("BMI")
+    ax.set_ylabel("Target" if df_val == 3 else "")
+    ax.legend()
+    ax.grid(True)
+
+plt.tight_layout()
+plt.show()
+
+```
+
+### GAM coding
+We we have 3 different building blocks for our GAM formula:
+- `bs(variable, df=..)` - this is our B-spline basis expansion. It transforms a single variable into **multiple features** that represent smooth, piecewise polynomial functions. It allows the model to learn a smooth curve from the data, enabling flexibility in capturing **complex non-linear patterns** 
+- `C(variable)` - is used when the feature is a categorical variable (e.g., binary features like sex or multi-class features). 
+- `variable` - this is the **linear term**, which includes the variable in its raw, numeric form. The model will fit a straight, linear line for it.
+
+
+Look at the plot from the beginning:
   - Are there any features that could be modeled using linear regression?
   - Are there any categorical features?
 
+We start by defining our formula. 
 ```{code-cell}
-from sklearn.datasets import load_diabetes
-from pygam import LinearGAM, s, f, l 
-
-# Create the GAM model
-gam = LinearGAM(
-    s(X.columns.get_loc('age')) +                   # age: smooth term
-    f(X.columns.get_loc('sex')) +                   # sex: factor
-    s(X.columns.get_loc('bmi')) +                   # bmi: smooth
-    s(X.columns.get_loc('bp')) +                    # bp: smooth
-    s(X.columns.get_loc('s1')) +                    # s1: smooth
-    s(X.columns.get_loc('s2')) +                    # s2: smooth
-    s(X.columns.get_loc('s3')) +                    # s3: smooth
-    s(X.columns.get_loc('s4')) +                    # s4: smooth
-    l(X.columns.get_loc('s5')) +                    # s5: linear
-    s(X.columns.get_loc('s6'))                      # s6: smooth 
-) 
-
-# Fit the model
-gam.fit(X_train, y_train)
-
-# Print summary 
-gam.summary()
+# formula with building blocks independetly for each feature
+formula = (
+    "bs(age, df=6) + "           # smooth
+    "C(sex) + "                  # categorical
+    "bs(bmi, df=6) + "           # smooth
+    "bs(bp, df=3) + "            # smooth
+    "bs(s1, df=6) + "
+    "bs(s2, df=6) + "
+    "bs(s3, df=6) + "
+    "bs(s4, df=6) + "
+    "s5 + "                      # linear
+    "bs(s6, df=6)"               # smooth
+)
 ```
-The GAM model explains about 64% of the variance, showing a good fit. Key predictors include bmi, sex, s5, which show significant effects. Some features like age, s1, s2, s3, s4 and s6 appear less important. Note that p-values may be slightly optimistic due to smoothing estimation.
+Next, we create a design matrix using `patsy`, which transforms our raw data into the format needed for a GAM.
 
-To evaluate how well our model generalizes to unseen data, we split the data into training and test sets. This allows us to train the model on one part of the data and evaluate its performance on a separate, unseen portion.
+```{code-cell}
+from patsy import dmatrix
+
+# combine into one trainings set for design matrix creation
+train_data= X_train.copy()
+train_data["target"]= y_train
+
+# Build design matrix from training data
+X_train_design = dmatrix(formula, data=train_data, return_type="dataframe")
+```
+Now we fit a simple linear regression model — but it's not that simple anymore:
+Thanks to the spline terms, it behaves like a GAM and can capture nonlinear relationships.
+
+```{code-cell}
+from sklearn.linear_model import LinearRegression
+
+# Fit model
+model = LinearRegression()
+model.fit(X_train_design, y_train)
+```
+Finally, we evaluate the model's performance on the training data using the R² score,
+which tells us how much of the variance in the target the model explains. 
+
+```{code-cell}
+from sklearn.metrics import r2_score
+
+# R² score 
+r_squared = model.score(X_train_design, y_train)
+print(f"R² - trainings data: {r_squared:.3f}")
+``` 
+
+The GAM model explains about 59% of the variance, showing a good fit. 
+
+To evaluate how well our model generalizes to unseen data, we split the data into training and test sets. This allows us to train the model on one part of the data and evaluate its performance on a separate, unseen portion. 
 As a comparison, we apply the same train/test evaluation to a linear regression model to see how it performs on the same test data.
 
 ```{code-cell}
-from sklearn.model_selection import cross_val_score
-from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score
 
-# LINEAR REGRESSION
-# Linear Regression
+# --- GAM ---
+test_data = X_test.copy()
+test_data["target"] = y_test
+# defining the matrix
+X_test_design = dmatrix(formula, data=test_data, return_type="dataframe")
+
+# GAM Predictions
+y_pred_gam = model.predict(X_test_design)
+score_gam = r2_score(y_test, y_pred_gam)
+
+# --- LINEAR REGRESSION ---
 linear_model = LinearRegression()
 linear_model.fit(X_train, y_train)
+
+# Linear Regression Prediction
 y_pred_lr = linear_model.predict(X_test)
 score_lr = r2_score(y_test, y_pred_lr)
 
-# GAM
-# predict on test set
-y_pred= gam.predict(X_test)
+# --- PRINT COMPARISON ---
+print(f"GAM R²on test data:     {score_gam:.3f}")
+print(f"Linear R² on test data:  {score_lr:.3f}")
 
-# Evaluate performance
-score_gam = r2_score(y_test, y_pred)
-
-# printing results
-print("GAM CV scores:", score_gam)
-print("Linear CV scores:", score_lr)
 ```
-As we can see, our GAM model **does not perform as well on unseen** data. While the training data showed a strong R² of 0.6471, the test performance dropped to 0.38, which is a typical sign of **overfitting**. In contrast, the simpler linear regression model achieved a higher R² of 0.48 on the same test data.
+As we can see, our GAM model **does not perform as well on unseen** data. While the training data showed a strong R² of 0.59, the test performance dropped to 0.44, which is a typical sign of **overfitting**. In contrast, the simpler linear regression model achieved a higher R² of 0.48 on the same test data.
 However, one of the strengths of GAMs is their **flexibility**. We can easily adjust the model—for example, by changing how we treat specific features (e.g. linear instead of spline, or vice versa)—to improve generalization. 
 
 
