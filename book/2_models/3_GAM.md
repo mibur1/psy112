@@ -44,8 +44,8 @@ Importantly, GAMs learn non-linear relationships in the data such that:
 
 ```{code-cell} ipython3
 :tags: ["remove-input"]
-#from jupyterquiz import display_quiz
-#display_quiz("quiz/GAM.json", shuffle_answers=False)
+from jupyterquiz import display_quiz
+display_quiz("quiz/GAM.json", shuffle_answers=False)
 ```
 ------------------------------------------------
 ## *Todays data - Diabetes dataset*
