@@ -6,9 +6,10 @@ seaborn
 plotly
 nilearn
 scikit-learn
-jupyterquiz
 jupytercards
+jupyterquiz
 statsmodels
-abess
 mlxtend
-pygam
+patsy
+ipywidgets
+ISLP 
