@@ -454,12 +454,13 @@ What does this mean for our prediction using the 4 features?
 - On average, our predictions deviate from the actual salary by about $417.
 - Our model explains only a small portion (~3%) of the variability in salary. That also means that the majority of factors influencing salary are not captured by these predictors.
 
-### Dimension Reduction
-Dimensionality reduction is a model selection technique that simplifies high-dimensional datasets by transforming them into a smaller set of uncorrelated components. Instead of selecting individual features, it **combines correlated variables into new components** that retain most of the data’s variance. This reduces computational cost, lowers the risk of overfitting, and improves model performance — especially when many features are present. The first component captures the most variance, the second the next most, and so on. This method helps preserve patterns and trends in the data while working with fewer, more manageable inputs.
-
 ```{admonition} TO MICHA - HEEEEELP
 :class: danger
 
 - 0.03 Test R^2? Das ist turbo schlecht!
 - genau gleiche trainings R^2 für Forward and best subset slection? 
 ``` 
+
+### Dimension Reduction
+Dimensionality reduction is a model selection technique that simplifies high-dimensional datasets by transforming them into a smaller set of uncorrelated components. Instead of selecting individual features, it **combines correlated variables into new components** that retain most of the data’s variance. This reduces computational cost, lowers the risk of overfitting, and improves model performance — especially when many features are present. The first component captures the most variance, the second the next most, and so on. This method helps preserve patterns and trends in the data while working with fewer, more manageable inputs.
+
