@@ -1,7 +1,0 @@
-[
-    {
-      "front": "Could you think about how to change the code to perform backward Selection instead of forward stepwise selection?",
-      "back": "You can simply change one parameter: direction to 'backward'"
-    }
-  ]
-  

@@ -12,5 +12,4 @@ statsmodels
 mlxtend
 patsy
 ipywidgets
-ISLP 
-abess
+ISLP

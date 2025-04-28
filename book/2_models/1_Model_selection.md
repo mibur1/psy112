@@ -120,51 +120,28 @@ display_quiz("quiz/BestSubsetSelection.json", shuffle_answers=False)
 ```
 
 <br>
-Let's get back to our dataset and see how Best Subset Seletion is performed in Python.
-
-We can, for example, use the [abess](https://abess.readthedocs.io/en/latest/index.html) package to run it with just a single line of code
+Let's get back to our dataset and see how Best Subset Seletion is performed in Python. Before we start the subset selection process, the first step is to define the target and the features:
 
 ```{code-cell} 
-from abess.linear import LinearRegression 
 import numpy as np
 
-
-# Define target and features
-y = np.array(hitters_subset["Salary"])
-
-hitters_subset = hitters_subset.drop("Salary", axis=1)
-X = np.array(hitters_subset)
-
-
-# Best Subset Selection
-p = X.shape[1]
-model = LinearRegression(support_size=range(1, p+1)) # support_size is how many features to try
-model.fit(X, y)
-
-# Get selected features and coeffs
-ind = np.nonzero(model.coef_) 
-print("non-zero predictors:", hitters_subset.columns[ind])
-print("coeffs:", model.coef_)
+y = hitters_subset["Salary"]
+X = hitters_subset.drop("Salary", axis=1)
 ```
 
-Abess evaluates all possible combinations of our 9 predictors and automatically selects the best subset based on internal criteria (e.g., minimizing BIC). WE can also implement Best Subset Selection manually using E.G. the `mlxtend` library. Unlike abess, this approach allows you to explicitly control and understand what’s happening at each step of the selection process.
-
-In the following example, we evaluate all possible feature combination and identify the best subset. Before even starting the subset selection process, the first step is to define the target and the features.
-
 We first split our data into training and test dataset. Although the selection function uses cross-validation to identify the best subset of predictors (Step 3), this evaluation is done during the selection process and can still overfit to the data. To fairly assess how the final model performs on new data, we split off a test set and use it only after feature selection is complete.
-
-
-|Purpose                        	   | What is it for?                                   | When?                                               |
-|------------------------------------- |---------------------------------------------------|-----------------------------------------------------|
-|Cross Validation in selection function|Helps choose the best subset of features           |During selection                                     |
-|Test Set Evaluation                   |Checks how well the final model performs           |After selection                                      |
-
 
 ```{code-cell} 
 from sklearn.model_selection import train_test_split
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 ```
+
+|Purpose                        	   | What is it for?                                   | When?                                               |
+|------------------------------------- |---------------------------------------------------|-----------------------------------------------------|
+|Cross Validation in selection function|Helps choose the best subset of features           |During selection                                     |
+|Test Set Evaluation                   |Checks how well the final model performs           |After selection                                      |
+
 
 We then run Best Subset Selection on the training data:
 
@@ -174,11 +151,11 @@ from sklearn.model_selection import cross_val_score
 from mlxtend.feature_selection import ExhaustiveFeatureSelector
 
 efs = ExhaustiveFeatureSelector(LinearRegression(),
-          min_features=1,
-          max_features=X_train.shape[1],
-          scoring='r2',
-          cv=5,
-          print_progress=False)
+        min_features=1,
+        max_features=X_train.shape[1],
+        scoring='r2',
+        cv=5,
+        print_progress=False)
 
 efs.fit(X_train, y_train);
 ```
@@ -202,7 +179,7 @@ for subset in metric_dict.values():
 results_df = pd.DataFrame(results, columns=["n_features", "avg_r2"])
 
 # Aggregate by number of features
-results_df = results_df.groupby("n_features", as_index=False).max()  # max R², not min
+results_df = results_df.groupby("n_features", as_index=False).max()
 
 # Plot
 fig, ax = plt.subplots()
@@ -250,13 +227,11 @@ from sklearn.model_selection  import train_test_split
 
 # Run forward selection using MSE as the scoring metric
 forward = SequentialFeatureSelector(
-    model,              # defined model 
-    k_features=(1,7),   # Stopping criteria: Try models with 1,2,..,7 features
-    forward=True,       # use forward selection 
-    floating=False,     # Do not use floating selection -> Classic forward selection
-                        # floating =True : after each addition, it also checks if it should remove a feature that has become less useful
+    LinearRegression(),
+    k_features=X_train.shape[1],
+    forward=True,
     scoring='r2',       
-    cv=cv_folds)
+    cv=5)
 
 # Fit the prepared model on our trainings data
 sfs = forward.fit(X_train, y_train)
@@ -264,7 +239,6 @@ sfs = forward.fit(X_train, y_train)
 Just like we did with best subset selection, we now visualize the R² score at each model size. This helps us understand how the model performance improves as we add more predictors.
 
 ```{code-cell} ipython3
-:tags: [remove-input]
 # Plot the R² score for each number of features
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -313,7 +287,9 @@ print(f"Cross-validated R² of best model: {best_cv_r2:.4f}")
 - In our case, we only had a small number of predictors, which makes it more likely to end up with the same subset.
 ```
 
+
 #### Backward Stepwise Selection
+
 ```{image} ./figures/BackwardStepwiseSelection.drawio.png
 :alt: ModelSelection
 :width: 30%
@@ -338,26 +314,26 @@ The Full Model contain all p predictors!
 <br>
 <br>
 
-Backward stepwise selection works very similarly to forward selection — the main difference is that we start with the full model and remove features one by one. 
+Backward stepwise selection works very similarly to forward selection — the main difference is that we start with the full model and remove features one by one:
 
+```{code-cell}
+backward = SequentialFeatureSelector(
+    LinearRegression(),
+    k_features=X_train.shape[1],
+    forward=False,
+    scoring='r2',       
+    cv=5)
 
-```{code-cell} ipython3
-:tags: [remove-input]
-
-from jupytercards import display_flashcards
-display_flashcards('quiz/BackwardSelection_Flashcard.json')
+sfs = backward.fit(X_train, y_train)
 ```
 
+#### Subset Selection Summary
 
-```{admonition} Subset Selection Summary
-:class: tip
-
-| Best Subset Selection            	  | Forward Stepwise Selection                        | Backward Stepwise Selection                         |
-|-------------------------------------|---------------------------------------------------|-----------------------------------------------------|
-|**-** computationally very expensive |**-** not guaranteed to find best model            |**-** not guaranteed to find best model              |
-|**-** with many *p* may overfit      |**+** possible to us when p is very large          |**+** possible to us when p is very large, given p<n |
-|**+** able to find the best model    |**+** computationally less demanding               |**+** computationally less demanding                 |
-```
+| Best Subset Selection            	  | Forward Stepwise Selection                        | Backward Stepwise Selection                          |
+|-------------------------------------|---------------------------------------------------|------------------------------------------------------|
+|**+** will find the best model       |**-** not guaranteed to find best model            |**-** not guaranteed to find best model               |
+|**-** may overfit with large p       |**+** possible to use when p is very large         |**+** possible to use when p is very large, given p<n |
+|**-** computationally very expensive |**+** computationally less demanding               |**+** computationally less demanding                  |
 
 
 ```{code-cell} ipython3
@@ -400,13 +376,7 @@ What does this mean for our prediction using the 4 features?
 - On average, our predictions deviate from the actual salary by about $417.
 - Our model explains only a small portion (~3%) of the variability in salary. That also means that the majority of factors influencing salary are not captured by these predictors.
 
-```{admonition} TO MICHA - HEEEEELP
-:class: danger
 
-- 0.03 Test R^2? Das ist turbo schlecht!
-- genau gleiche trainings R^2 für Forward and best subset slection? 
-``` 
+### Dimensionality Reduction
 
-### Dimension Reduction
-Dimensionality reduction is a model selection technique that simplifies high-dimensional datasets by transforming them into a smaller set of uncorrelated components. Instead of selecting individual features, it **combines correlated variables into new components** that retain most of the data’s variance. This reduces computational cost, lowers the risk of overfitting, and improves model performance — especially when many features are present. The first component captures the most variance, the second the next most, and so on. This method helps preserve patterns and trends in the data while working with fewer, more manageable inputs.
-
+Dimensionality reduction is a model selection technique that simplifies high-dimensional datasets by transforming them into a smaller set of uncorrelated components. Instead of selecting individual features, it combines correlated variables into new components that retain most of the data’s variance. This reduces computational cost, lowers the risk of overfitting, and improves model performance — especially when many features are present. The first component captures the most variance, the second the next most, and so on. This method helps preserve patterns and trends in the data while working with fewer, more manageable inputs.
