@@ -69,7 +69,7 @@ In such cases, it is be beneficial to remove one of the correlated features.
 
 ```{code-cell} ipython3
 features_drop = ["CRuns", "CAtBat"]
-hitters_subset = hitters_subset.drop(columns= features_drop)
+hitters_subset = hitters_subset.drop(columns=features_drop)
 ```
 
 
@@ -120,93 +120,73 @@ display_quiz("quiz/BestSubsetSelection.json", shuffle_answers=False)
 ```
 
 <br>
-Let's get back to our dataset and see how best subset seletion is performed in Python.
+Let's get back to our dataset and see how Best Subset Seletion is performed in Python.
 
-
---------------------------------------
-**To MICHA:** We could also think about using abess. https://github.com/abess-team/abess
-But for now I decided to not use it since it just do everything and I thought it might be harder to understand the concept behind it, because we  . However if you decide to go that way, we can use the following code chunk.
-We could also consider using abess (https://github.com/abess-team/abess) — it's a nice OPEN SOURCE library that performs best subset selection super efficiently.
-However, I decided not to use it for now because it does everything automatically, and I thought that might make it harder for students to understand what's actually happening. but if you prefer to go use abess, here is the code chunk, we could use:
-If you need more details:https://abess.readthedocs.io/en/latest/auto_gallery/1-glm/plot_1_LinearRegression.html#sphx-glr-auto-gallery-1-glm-plot-1-linearregression-py
+We can, for example, use the [abess](https://abess.readthedocs.io/en/latest/index.html) package to run it with just a single line of code
 
 ```{code-cell} 
 from abess.linear import LinearRegression 
 import numpy as np
-import pandas as pd
 
-# Prepare data - defining target and features
-X= np.array(hitters_subset.drop("Salary", axis=1))
-y= np.array(hitters_subset["Salary"])
 
-# Use abess for best subset selection
-model = LinearRegression(support_size=range(1, 10))  # support_size is how many features to try
+# Define target and features
+y = np.array(hitters_subset["Salary"])
+
+hitters_subset = hitters_subset.drop("Salary", axis=1)
+X = np.array(hitters_subset)
+
+
+# Best Subset Selection
+p = X.shape[1]
+model = LinearRegression(support_size=range(1, p+1)) # support_size is how many features to try
 model.fit(X, y)
 
-# Get selected features (non-zero coefficients)
-ind = np.nonzero(model.coef_)
-print("non-zero:\n", hitters_subset.columns[ind])
-print("coef:\n", model.coef_)
+# Get selected features and coeffs
+ind = np.nonzero(model.coef_) 
+print("non-zero predictors:", hitters_subset.columns[ind])
+print("coeffs:", model.coef_)
 ```
-The abess algorithm evaluates all possible combinations of our 9 predictors and automatically selects the best subset based on internal criteria (e.g., minimizing BIC). In our case, it selected just two predictors: `CAtBat` and `Assists` 
 
-You can also implement Best Subset Selection manually using the `mlxtend` library. Unlike abess, this approach allows you to explicitly control and understand what’s happening at each step of the selection process.
-------------------------------- delete until here if we use the manual part!
+Abess evaluates all possible combinations of our 9 predictors and automatically selects the best subset based on internal criteria (e.g., minimizing BIC). WE can also implement Best Subset Selection manually using E.G. the `mlxtend` library. Unlike abess, this approach allows you to explicitly control and understand what’s happening at each step of the selection process.
 
-In the following example, we evaluate all possible feature combinations from 1 to 9 predictors and identify the best subset.
+In the following example, we evaluate all possible feature combination and identify the best subset. Before even starting the subset selection process, the first step is to define the target and the features.
 
-Before even starting the subset selection process, the first step is to define the target and the features.
+We first split our data into training and test dataset. Although the selection function uses cross-validation to identify the best subset of predictors (Step 3), this evaluation is done during the selection process and can still overfit to the data. To fairly assess how the final model performs on new data, we split off a test set and use it only after feature selection is complete.
 
-```{code-cell} 
-# Define target and features
-X = hitters_subset2.drop(columns=["Salary"])
-y = hitters_subset2["Salary"]
-
-
-```
-Before performing the best subset selection, we split our data into training and test dataset. Although the selection function uses cross-validation to identify the best subset of predictors (Step 3), this evaluation is done during the selection process and can still overfit to the data. To fairly assess how the final model performs on new data, we split off a test set and use it only after feature selection is complete.
 
 |Purpose                        	   | What is it for?                                   | When?                                               |
 |------------------------------------- |---------------------------------------------------|-----------------------------------------------------|
 |Cross Validation in selection function|Helps choose the best subset of features           |During selection                                     |
 |Test Set Evaluation                   |Checks how well the final model performs           |After selection                                      |
 
+
 ```{code-cell} 
-# Split data BEFORE selection
 from sklearn.model_selection import train_test_split
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 ```
-So far, so good — time to run best subset selection on the training data.
+
+We then run Best Subset Selection on the training data:
 
 ```{code-cell} 
-:tags: [remove-output]
-
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import cross_val_score
 from mlxtend.feature_selection import ExhaustiveFeatureSelector
 
-# Preperation 
-# Define the regression model 
-model = LinearRegression()
-
-# Use 5-fold cross-validation to evaluate model performance
-cv_folds = 5
-
-# Perform best subset selection 
-efs = ExhaustiveFeatureSelector(model, 
-          min_features=1, 
-          max_features=7,             # Try all subsets from 1 to 7
-          scoring='r2',               # R² as scoring metric
-          cv=cv_folds,                # Apply k-fold cross-validation (e.g., 5-fold)
+efs = ExhaustiveFeatureSelector(LinearRegression(),
+          min_features=1,
+          max_features=X_train.shape[1],
+          scoring='r2',
+          cv=5,
           print_progress=False)
 
-# fit it only on trainings data!
-efs.fit(X_train, y_train)
+efs.fit(X_train, y_train);
 ```
+
 Let's have a look how the best model for each model size performed. This plot helps us visualize how performance improves as we increase the number of features. It reflects Step 2 of our selection process and gives us insight into the bias-variance tradeoff: at some point, adding more features doesn't necessarily improve the model much.
 
 ```{code-cell}
+import pandas as pd
 import matplotlib.pyplot as plt
 
 # Extract metric results
@@ -225,15 +205,12 @@ results_df = pd.DataFrame(results, columns=["n_features", "avg_r2"])
 results_df = results_df.groupby("n_features", as_index=False).max()  # max R², not min
 
 # Plot
-plt.figure(figsize=(8, 5))
-plt.plot(results_df["n_features"], results_df["avg_r2"], marker="o")
-plt.title("Best Subset Selection: R² vs. Number of Features")
-plt.xlabel("Number of Features")
-plt.ylabel("Cross-validated R²")
-plt.show()
+fig, ax = plt.subplots()
+ax.plot(results_df["n_features"], results_df["avg_r2"], marker="o")
+ax.set(title="Best Subset Selection: R² vs. Number of Features", xlabel="Number of features", ylabel="Cross-validated R²");
 ```
 
-Now we need to retrieve the best overall subset. Since efs performs cross-validation internally, we can simply identify the subset with the highest average R² score from the output.
+Now we need to retrieve the best overall subset by identifying the subset with the highest average R² score from the output:
 
 ```{code-cell}
 # Getting the names of best features
@@ -241,6 +218,7 @@ print(f"Cross-validated R² of best model: {efs.best_score_:.4f}")
 print("Best feature subset:", efs.best_feature_names_)
 ```
 According to best subset selection, the subset with 4 predictors is the best combination, achieving a training R² score of 0.41.
+
 
 #### Forward Stepwise Selection
 Best subset selection is not feasible for very large *p* due to its computational demands. A more efficient way solving this problem, is foward stepwise selection. 
@@ -260,10 +238,6 @@ Best subset selection is not feasible for very large *p* due to its computationa
     - reaching a stopping criteria
     - k=p
 4. Identifying the single best model using cross-validation
-
-<br>
-<br>
-<br>
 
 So let`s apply forward stepwise selection. 
 
@@ -316,6 +290,7 @@ plt.ylabel("Cross-validated R²")
 plt.tight_layout()
 plt.show()
 ```
+
 This looks quite similar to best subset selection. Let’s now take a look at which predictors were selected by the forward stepwise selection model. We’ll extract the final subset of features that the algorithm identified as most predictive of `Salary`. 
 
 ```{code-cell}
@@ -337,11 +312,6 @@ print(f"Cross-validated R² of best model: {best_cv_r2:.4f}")
 - However, this is not necessarily always the case — best subset and stepwise selection can, and often do, **result in different predictors** or even a different number of predictors being selected.
 - In our case, we only had a small number of predictors, which makes it more likely to end up with the same subset.
 ```
-
-To wrap up our subset selection methods, let’s briefly explore backward stepwise selection.
-
-
-<iframe src="https://trinket.io/embed/python3/a00b2117cbe7" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
 
 #### Backward Stepwise Selection
 ```{image} ./figures/BackwardStepwiseSelection.drawio.png
