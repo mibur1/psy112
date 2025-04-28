@@ -10,9 +10,6 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
-myst:
-  substitutions:
-    ref_test: 1
 ---
 
 # <i class="fa-solid fa-handshake"></i> Bias-Variance Tradeoff

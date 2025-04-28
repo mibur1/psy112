@@ -25,7 +25,7 @@ Resampling methods offer a powerful approach to assess model performance and mit
 ```{admonition} Resampling Strategies
 :class: hint
 
-The two most widely used resampling methods are:
+Two of the most widely used resampling methods are:
 
 - *Cross validation*: Creating non-overlapping subsets for training and testing
 - *Bootstrapping*: Sampling with replacement, resulting in (partly) overlapping samples
@@ -33,7 +33,7 @@ The two most widely used resampling methods are:
 
 ## The data
 
-We will use a dataset you are already familiar with from last semester: The [Iris](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html) dataset which contains 150 samples from three species of the iris plant (iris setosa, iris virginica and iris versicolor). Four features were measured: the length and the width of the sepals and petals, in centimeters.
+We will use a dataset you are already familiar with from last semester: The [Iris](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html) dataset which contains 150 samples from three species of the iris plant (iris setosa, iris virginica and iris versicolor). The data contains four features: the length and the width of the sepals and petals (in centimeters).
 
 ```{code-cell} 
 import seaborn as sns
@@ -49,7 +49,7 @@ df['class'] = pd.Categorical.from_codes(iris.target, iris.target_names)
 sns.scatterplot(data=df, x='sepal length (cm)', y='sepal width (cm)', hue="class");
 ```
 
-The goal of our model is to classify the flowering plants based on two features shown in the plot (sepal length and width). Which of the following is true about the model and task at hand?
+The goal of our model is to classify the flowering plants based on the two features shown in the plot (sepal length and width). Which of the following is true about the model and task at hand?
 
 ```{code-cell} ipython3
 :tags: [remove-input]
@@ -65,13 +65,13 @@ Hyperparameters are parameters that are not learned from the data but set by the
 
 The simplest form of cross validation is to simply split the dataset into two parts:
 
-- *Training Set*: Part of the data used for trainin
-- *Validation Set*: Part of the data used for testing (e.g. across different models and hyperparameters{{hyperparam}})
+- *Training set*: Part of the data used for training
+- *Validation set*: Part of the data used for testing (e.g. across different models and hyperparameters<sup>{{hyperparam}}</sup>)
 
 
 ```{figure} figures/ValidationSet.drawio.png
 :name: VS
-:alt: Validation Set approach
+:alt: Validation set approach
 :align: center
 
 The validation set splits the dataset into a training and a testing set (these do not necessarily need to be of equal size).
@@ -122,7 +122,7 @@ from jupytercards import display_flashcards
 display_flashcards('quiz/validation_set.json');
 ```
 
-**Hands on**: In the editor below, perform classification for two splits in the the data. First, use 80% of the data for testing and 20% for training, and second use 20% for training and 80% for testing. Before evaluation the results, think about what kind of results you would expect from the two models. Which do you think will perform better?
+**Hands on**: In the editor below, we perform a classification for two splits in the the data. Please modify the code to first use 80% of the data for testing and 20% for training, and second to use 20% for training and 80% for testing. Before evaluating each model, think about what kind of results you would expect. Which model do you think will perform better?
 
 <iframe src="https://trinket.io/embed/python3/48c2802e1e16" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
 
@@ -136,32 +136,27 @@ The validation set approach is a quick and easy way to check how well a model pe
 
 ### K-fold CV
 
-To get a more reliable and robust performance estimate, we need something smarter — something that doesn’t leave our results up to chance. Rather than worrying about if the split of data used for training and validation is biased, we will perform this splitting multiple times and use all of the splits in turn.
+To get more robust performance estimates, we need something smarter. Rather than worrying about if the split of data used for training and validation is biased, we will perform this splitting multiple times and use all of the splits in turn.
 
-In k-fold CV we randomly dive the dataset into $k$ equal-sized folds. One sample is designated at the validation set, while the remaining $k-1$ samples are the training sets. The fitting process is repeated $k$-times, each time using a different fold as the validation set. At the end of the process, we can compute the average accuracy across all validation sets to obtain a more reliable estimate of the model's overall performance.
+In k-fold CV we randomly dive the dataset into $k$ equal-sized folds. In each fold, one sample is then designated as the validation set, while the remaining $k-1$ samples are the training sets. The fitting process is repeated $k$-times, each time using a different fold as the validation set. At the end of the process, we can compute the average accuracy across all validation sets to obtain a more reliable estimate of the model's overall performance.
 
 ```{figure} figures/CV.drawio.png
 :name: CV
 :alt: Cross validation
 :align: center
 
-K-fold cross validation splits the dataset into $k$ equally sized parts and then trains the model on all posible combinations of it, keeping the proportion of train/test data constant.
+K-fold cross validation splits the dataset into $k$ equally sized parts and then trains the model on all possible combinations of it, keeping the proportion of train/test data constant.
 ```
 
 Let`s try it on our data:
 
 
-1. Defining *k*
-
 ```{code-cell} ipython3
 from sklearn.model_selection import KFold, cross_val_score
+
 k_fold = KFold(n_splits = 5)
-```
-
-2. Defining and evaluating the model
-
-```{code-cell} ipython3
 model = svm.SVC(kernel='linear')
+
 scores = cross_val_score(model, X, y, cv=k_fold) 
 
 print(f"Average accuracy:    {scores.mean()}")
@@ -171,7 +166,9 @@ print(f"Individual accuracies: {scores}")
 If we are interested in the exact models, we can also run the training and evaluation explicitly which allows us to save the models:
 
 ```{code-cell} ipython3
-model = svm.SVC(kernel='linear')
+from sklearn.base import clone
+
+base_model = svm.SVC(kernel='linear')
 score_list = []
 model_list =  []
 
@@ -179,6 +176,7 @@ for train_index, test_index in k_fold.split(X):
     X_train, X_test = X.iloc[train_index], X.iloc[test_index] # iloc because X is a df
     y_train, y_test = y.iloc[train_index], y.iloc[test_index] # iloc because y is a df
 
+    model = clone(base_model) # create a new copy of the model for every iteration
     model.fit(X_train, y_train)
     score = model.score(X_test, y_test)
     
@@ -186,6 +184,7 @@ for train_index, test_index in k_fold.split(X):
     model_list.append(model)
 
 print(f"Best performing model in split {score_list.index(max(score_list))}.")
+print(f"Accuracy: {max(score_list)}")
 ```
 
 ```{admonition} Validatation set vs. k-fold
@@ -196,7 +195,7 @@ Comparing the two approaches, we see that the validation set approach shows a hi
 
 **Try it yourself**: Change the number of folds $k$ and observe how the predicitions change. What do you feel like is a good tradeoff between bias and variance?
 
-<iframe src="https://trinket.io/embed/python3/679ce3200f38" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+<iframe src="https://trinket.io/embed/python3/c46516cf56de" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
 
 ```{admonition} The choice of $k$
 :class: note 

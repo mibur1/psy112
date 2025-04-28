@@ -7,12 +7,12 @@
             "type": "value",
             "value": 512,
             "correct": true,
-            "feedback": "Correct! Great job :)"  
+            "feedback": "Correct!"  
         },
         {
             "type": "default",
             "correct": false,
-            "feedback": "Not quite.  Remember: Best Subset Selection tries **all possible combinations of predictors, so with p predictors, that's 2^p models. Let`s have another try :)"
+            "feedback": "Not quite.  Remember: Best Subset Selection tries all possible combinations of predictors (2^p models)."
         }
     ]
 }]

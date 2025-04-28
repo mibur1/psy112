@@ -10,101 +10,80 @@ kernelspec:
   display_name: Python 3
   language: python
   name: python3
-myst:
-  substitutions:
-    ref_test: 1
 ---
 
 # <i class="fa-brands fa-python"></i> Model Selection
-In neurocognitive psychology, brain imaging (e.g., fMRI, EEG), cognitive assessments, and behavioral experiments generate vast datasets, measuring thousands of brain regions, connectivity patterns, and behavioral traits. This data captures everything from patient vitals to cognitive processes and offers **detailed insights** with immense predictive power. However, it also introduces challenges: **too many predictors**, making analysis and interpretation difficult.
+
+In neurocognitive psychology, we often collect huge amounts of data — sometimes thousands of measurements from different brain regions or many behavioral scores. Having more information can, in theory, help us make better predictions, but it also brings risks: too many variables can make analyses infeasible, lead to false discoveries, or cause models to learn noise instead of real effects. 
+
 
 ## The large p issue
-**Big Data** refers to large datasets with many predictors, that cannot be processed or analyzed using traditional data processing techniques. For our prediction models, this brings some issues:
+
+**Big data** refers to large data sets with many predictors which often cannot be processed or analyzed using traditional data processing techniques. For our prediction models, this brings some issues:
+
 - While the linear model can in theory still be used for such data, the **ordinary least squares fit becomes infeasible**, especially when p > n 
 - The large amount of features reduce interpretability
 
 
-This is where **linear model selection** becomes essential, offering techniques to refine our models and extract meaningful insights from high-dimensional neurocognitive data!
+This is where **linear model selection** becomes essential, offering techniques to refine our models and extract meaningful insights from high-dimensional data.
 
-----------------------------------------------------------------
-### *Todays data with many predictors - Hitters dataset*
-For pracitcal demonstration, we will use the `Hitters` dataset. This data set provides Major League Baseball Data from the 1986 and 1987 seasons. It contains 322 observations of major league players on 20 variables. The Research aim is to predict a baseball player's salary on the basis of various predictors associated with the performance in the previous year.
+
+## Today's data: Hitters
+
+For practical demonstration, we will use the `Hitters` dataset. This dataset provides Major League Baseball Data from the 1986 and 1987 seasons. It contains 322 observations of major league players on 20 variables (so it's not big data, but we can pretend it is). The Research aim is to predict a baseball player's salary on the basis of various predictors associated with the performance in the previous year. You can check its contents here: https://islp.readthedocs.io/en/latest/datasets/Hitters.html  
 
 ```{code-cell} 
-# import packages
 import statsmodels.api as sm 
 
-# get dataset
+# Get the data
 hitters = sm.datasets.get_rdataset("Hitters", "ISLR").data
 ```
-Get yourself familiar with the dataset. Look at the predictor variables. Which information do we include to predict the salary? 
-You can check the variable names here: https://islp.readthedocs.io/en/latest/datasets/Hitters.html  
-Also take a closer look to the variable you want to predict! Do we have the information(s) that we need for all players?
 
-<iframe src="https://trinket.io/embed/python3/12222a549d51" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+For computational reasons, we will not include all predictors but only a smaller subset:
 
-For computationally reasons, we will not include all predictors but only a small subset
 ```{code-cell} 
-# keeping a total of 10 variables - the target ´Salary´ and 9  features.
+# Keep a total of 10 variables - the target ´Salary´ and 9  features.
 hitters_subset = hitters[["Salary", "CHits", "CAtBat", "CRuns", "CWalks", "Assists", "Hits", "HmRun", "Years", "Errors"]].copy()
 
-# make sure the rows, containing missing values, are dropped
+# Remove rows with missing vlaues
 hitters_subset.dropna(inplace=True)
 
 hitters_subset.head()
 ```
 
-Let’s also take a look at the correlation between predictors to check for potential multicollinearity, which can affect the stability of linear regression models.
+Let’s also take a look at the correlation matrix to check for potential multicollinearity, which can affect the stability of linear regression models.
 
 ```{code-cell} 
-import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Correlation heatmap for hitters subset
-plt.figure(figsize=(8, 5))
-sns.heatmap(hitters_subset.corr(), annot=True, cmap="coolwarm", fmt=".2f")
-plt.title("Correlation Heatmap of Hitters Subset", fontsize=16)
-plt.show()
+sns.heatmap(hitters_subset.corr(), annot=True, cmap="coolwarm", fmt=".2f");
 ```
-The heatmap reveals strong correlations between several predictors, indicating multicollinearity. Subset Selection methods are sensitive to multicollinearity and can make unstable or misleading variable selections.
+
+The heatmap reveals strong correlations between several predictors:
 
 - `CHits` and `CAtBat` show a correlation of 1,
 - `CHits` and `CRuns` have a very strong correlation of 0.98,
 
-In such cases, it may be beneficial to remove one of the correlated features.
+In such cases, it is be beneficial to remove one of the correlated features.
 
-
-**Hands on:** Again take a look at what the feautures are measuring (https://islp.readthedocs.io/en/latest/datasets/Hitters.html) and decide, which one to drop! To make your decision not just random, maybe think about the relevance in predicting the `Salary`. Drop the features and check the heatmap again!
-
-<iframe src="https://trinket.io/embed/python3/643a5691f205" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
 
 ```{code-cell} ipython3
-:tags: [remove-input]
-## Removing features
-# List of features to drop
 features_drop = ["CRuns", "CAtBat"]
-# dropping 
-hitters_subset2= hitters_subset.drop(columns= features_drop)
+hitters_subset = hitters_subset.drop(columns= features_drop)
 ```
 
-Okay, now that we know our dataset, let's look at how to handle such a large number of predictors! 
 
-----------------------------------------------------------------
 ## Handling big data in linear models
-
 
 ```{admonition} Handling big data
 :class: hint
 
-To handle large datasets efficiently in linear modeling, three key techniques are used:
+To handle large datasets efficiently in linear modeling, we will introduce three methods:
 
 - **Subset Selection**
 - **Dimension Reduction**
 - **Regularization / Shrinkage**
 ```
-
-By leveraging these methods, we can build robust predictive models that remain efficient and interpretable, even in the face of Big Data challenges.
-
 
 ### Subset Selection
 In subset selection we identify a subset of *p* predictos that are truly related to the outcome. The model get fitted using least squares on the reduces set of variables.
@@ -126,18 +105,13 @@ The Null Model only predicts the sample mean
 <br>
 
 1. Consider all possible models
-    - Starting with Null Model <em>M0</em>, which contains no predictors
+    - Starting with null model $M_0$, which contains no predictors
     - Iteratively adding a predictor to the model
-2. Identify the Best Model of each size
-    - Either by the smallest RSS or the largest <code>R²</code></li>
-3. Identify the Best Overall Model
-    - Use cross-validation to find the best <em>Mk</em></li>
+2. Identify the best model of each size
+    - Either by the smallest RSS or the largest $R^2$
+3. Identify the best overall model
+    - Use cross-validation to find the best $M_k$
 
-<br>
-<br>
-<br>
-
-Let's get back to our dataset and see how Best Subset Seletion is performed in python.
 
 ```{code-cell} ipython3
 :tags: ["remove-input"]
@@ -146,6 +120,8 @@ display_quiz("quiz/BestSubsetSelection.json", shuffle_answers=False)
 ```
 
 <br>
+Let's get back to our dataset and see how best subset seletion is performed in Python.
+
 
 --------------------------------------
 **To MICHA:** We could also think about using abess. https://github.com/abess-team/abess
