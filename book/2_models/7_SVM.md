@@ -17,4 +17,4 @@ myst:
 
 # <i class="fa-solid fa-gear"></i> Support Vector Machines
 
-hello world
+https://jakevdp.github.io/PythonDataScienceHandbook/05.07-support-vector-machines.html

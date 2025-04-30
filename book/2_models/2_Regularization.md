@@ -95,7 +95,7 @@ Combined:
 Lambda is a hyperparameter which we need to chose ourselves (through e.g. cross validation). 
 ```
 
-#### Implementing Ridge Regression
+### Implementing Ridge Regression
 
 **Step 1:** We first standardize the predictors as ridge regression is sensitive to scaling. This can be done by using e.g. `StandardScaler` from `scikit-learn`: 
 
@@ -178,7 +178,7 @@ ax.plot(alphas, coefs)
 ax.set(title="Ridge coefficients", xlabel="Lambda", ylabel="Beta");
 ```
 
-### Lasso Regression
+## Lasso Regression
 
 In contrast to ridge regression, lasso regression will not retain all predictors in the final model but force some of them to zero. The loss function for lasso is given as:
 
@@ -212,25 +212,7 @@ ax.plot(alphas, coefs)
 ax.set(title="Lasso coefficients", xlabel="Lambda", ylabel="Beta");
 ```
 
-The "budget" for Ridge and Lasso is displayed in the figure below. You can think of it as a hard cap on how big your coefficients can get, overall. Specifically:
-
-- **Diamond shape** (Lasso): $\sum_{j=1}^p \lvert \beta_j \rvert \;\le\; t$
-
-- **Circle shape** (Ridge): $\sum_{j=1}^p \beta_j^2 \;\le\; t$
-
-The value $t$ is the budget you’re allowed to spend on your coefficients. Lasso spends it in a diamond (L1) way, Ridge in a circle (L2) way.
-
-
-```{image} ./figures/Budget_LassoRidge.png 
-:alt: Budget Lasso vs Ridge Regression
-:width: 100%
-:align: center 
-```
-<br>
-
-
-
-#### Implementing Lasso Regression
+### Implementing Lasso Regression
 
 Please use the code chunk below to apply a Lasso Regression on our Hitters subset! Please try to answer the following questions:
 - What is the best lamda this time?
@@ -238,6 +220,36 @@ Please use the code chunk below to apply a Lasso Regression on our Hitters subse
 - Looking at the coefficients, how many predictor were forced to become 0? According to this model, what are the key features? 
 
 <iframe src="https://trinket.io/embed/python3/883487e255eb" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+
+
+## Why Ridge and Lasso Behave Differently: The Budget
+
+When we use Ridge or Lasso regression, we are not just trying to fit the data perfectly — we are also trying to control how large the coefficients $\beta_j$ become. If we let them grow without any limits, the model could become too complex and overfit the data.
+
+To prevent this, Ridge and Lasso add a kind of budget:
+We are only allowed to spend a certain amount on the size of the coefficients. You can think of it like having a fixed amount of money that you have to divide up among all your coefficients.
+
+This budget is enforced by a mathematical condition. For Lasso, the total absolute value of the coefficients must stay below a certain limit $t$:
+    
+  $$\sum_{j=1}^p \lvert \beta_j \rvert \;\le\; t$$
+
+For Ridge, the total squared value of the coefficients must stay below this limit:
+    
+  $$\sum_{j=1}^p \beta_j^2 \;\le\; t$$
+
+Even though both Ridge and Lasso limit the size of the coefficients, how they limit them is different — and this changes the behaviour of the models.
+
+- In Ridge regression, the constraint $\sum \beta_j^2 \le t$ forms a circular shape (or a sphere in higher dimensions). This means that Ridge tends to shrink coefficients smoothly but rarely sets them exactly to zero.
+
+- In Lasso regression, the constraint $\sum |\beta_j| \le t$ forms a diamond shape (or a "pointy" version in higher dimensions). Because of these sharp corners, Lasso often drives some coefficients exactly to zero — which is why Lasso can create sparse models (feature selection).
+
+```{figure} figures/Budget_LassoRidge.png 
+:name: Budget Lasso vs Ridge Regression
+:alt: Budget
+:align: center
+
+The budget for Lasso and Ridge regression.
+```
 
 
 ## Elastic Net Regression
@@ -335,3 +347,5 @@ plt.legend()
 plt.tight_layout()
 plt.show()
 ```
+
+**Now it's your turn:** Head to the [exercise section](Exercises) for Exercise 2, in which you will implement a Lasso model.

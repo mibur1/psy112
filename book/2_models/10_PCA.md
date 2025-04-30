@@ -17,4 +17,4 @@ myst:
 
 # <i class="fa-solid fa-magnifying-glass-chart"></i> Principal Component Analysis
 
-hello world
+https://www.datacamp.com/tutorial/principal-component-analysis-in-python

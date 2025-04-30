@@ -17,4 +17,4 @@ myst:
 
 # <i class="fa-solid fa-divide"></i> LDA & QDA
 
-hello world
+https://islp.readthedocs.io/en/latest/labs/Ch04-classification-lab.html

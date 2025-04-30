@@ -17,4 +17,6 @@ myst:
 
 # <i class="fa-solid fa-lightbulb"></i> Naïve Bayes
 
-hello world
+https://animlbook.com/classification/naive_bayes/index.html
+
+https://jakevdp.github.io/PythonDataScienceHandbook/05.05-naive-bayes.html
