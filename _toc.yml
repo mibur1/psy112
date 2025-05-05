@@ -32,3 +32,4 @@ parts:
     - file: book/solutions/solutions
       sections:
         - file: book/solutions/solutions_1
+        - file: book/solutions/solutions_2
