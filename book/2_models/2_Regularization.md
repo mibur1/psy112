@@ -108,15 +108,15 @@ X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 ```
 
-**Step 2:** Next, we set up a range of values for λ. We will test 100 values between 0.001 and 20:
+**Step 2:** Next, we set up a range of values for λ. We will test 100 values between 0.001 and 150:
 
 ```{code-cell} ipython3
 import numpy as np 
 
-lambda_range = np.linspace(0.001, 20, 100) 
+lambda_range = np.linspace(0.001, 150, 100)
 ```
 
-**Step 3:** For each lambda, we will püerform ridge regression on the training data. Cross-validation is then used to identify the optimal lambda that minimizes prediction error:
+**Step 3:** For each lambda, we will perform ridge regression on the training data. Cross-validation is then used to identify the optimal lambda that minimizes prediction error:
 
 ```{margin}
 Note: In `sklearn`, the lamda parameter is called alpha.
@@ -127,7 +127,7 @@ from sklearn.linear_model import RidgeCV
 import pandas as pd
 
 # Get the optimal lambda
-ridge_cv = RidgeCV(alphas=lambda_range)
+ridge_cv = RidgeCV(alphas=lambda_range, cv=5)
 ridge_cv.fit(X_train_scaled, y_train) 
 
 print(f"Optimal alpha: {ridge_cv.alpha_}")
@@ -153,7 +153,7 @@ print(coef_table)
 **Step 4:** Finally, we can evaluate the model on the testing data to assess its ability for generalization:
 
 ```{code-cell} ipython3
-test_score_ridge= ridge_cv.score(X_test_scaled, y_test)
+test_score_ridge = ridge_cv.score(X_test_scaled, y_test)
 
 print(f"Test R²: {test_score_ridge}")
 ```
@@ -165,7 +165,7 @@ from sklearn.linear_model import Ridge
 import numpy as np 
 
 coefs = []
-alphas = np.linspace(0.001, 20, 80) 
+alphas = np.linspace(0.001, 50, 100)
 
 for a in alphas:
   ridgereg = Ridge(alpha=a)
@@ -199,7 +199,7 @@ from sklearn.linear_model import Lasso
 import numpy as np 
 
 coefs = []
-alphas = np.linspace(0.001, 20, 100) 
+alphas = np.linspace(0.001, 50, 100)
 
 for a in alphas:
   lassoreg = Lasso(alpha=a)
@@ -211,15 +211,6 @@ fig, ax = plt.subplots()
 ax.plot(alphas, coefs)
 ax.set(title="Lasso coefficients", xlabel="Lambda", ylabel="Beta");
 ```
-
-### Implementing Lasso Regression
-
-Please use the code chunk below to apply a Lasso Regression on our Hitters subset! Please try to answer the following questions:
-- What is the best lamda this time?
-- How does the model perform with unseen data?
-- Looking at the coefficients, how many predictor were forced to become 0? According to this model, what are the key features? 
-
-<iframe src="https://trinket.io/embed/python3/883487e255eb" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
 
 
 ## Why Ridge and Lasso Behave Differently: The Budget
@@ -239,9 +230,10 @@ For Ridge, the total squared value of the coefficients must stay below this limi
 
 Even though both Ridge and Lasso limit the size of the coefficients, how they limit them is different — and this changes the behaviour of the models.
 
-- In Ridge regression, the constraint $\sum \beta_j^2 \le t$ forms a circular shape (or a sphere in higher dimensions). This means that Ridge tends to shrink coefficients smoothly but rarely sets them exactly to zero.
+- In Lasso regression (left plot), the constraint $\sum |\beta_j| \le t$ forms a diamond shape (or a "pointy" version in higher dimensions). Because of these sharp corners, Lasso often drives some coefficients exactly to zero — which is why Lasso can create sparse models (feature selection).
 
-- In Lasso regression, the constraint $\sum |\beta_j| \le t$ forms a diamond shape (or a "pointy" version in higher dimensions). Because of these sharp corners, Lasso often drives some coefficients exactly to zero — which is why Lasso can create sparse models (feature selection).
+- In Ridge regression (right plot), the constraint $\sum \beta_j^2 \le t$ forms a circular shape (or a sphere in higher dimensions). This means that Ridge tends to shrink coefficients smoothly but rarely sets them exactly to zero.
+
 
 ```{figure} figures/Budget_LassoRidge.png 
 :name: Budget Lasso vs Ridge Regression
@@ -311,7 +303,7 @@ X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled  = scaler.transform(X_test)
 
 # Regularization paths
-lambda_range = np.linspace(0.001, 20, 100)
+lambda_range = np.linspace(0.001, 50, 100)
 
 # Lasso CV
 lasso_cv = LassoCV(alphas=lambda_range, cv=5).fit(X_train_scaled, y_train)

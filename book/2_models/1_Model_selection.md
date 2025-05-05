@@ -32,7 +32,7 @@ This is where **linear model selection** becomes essential, offering techniques 
 
 For practical demonstration, we will use the `Hitters` dataset. This dataset provides Major League Baseball Data from the 1986 and 1987 seasons. It contains 322 observations of major league players on 20 variables (so it's not big data, but we can pretend it is). The Research aim is to predict a baseball player's salary on the basis of various predictors associated with the performance in the previous year. You can check its contents here: https://islp.readthedocs.io/en/latest/datasets/Hitters.html  
 
-```{code-cell} 
+```{code-cell} ipython3
 import statsmodels.api as sm 
 
 # Get the data
@@ -41,7 +41,7 @@ hitters = sm.datasets.get_rdataset("Hitters", "ISLR").data
 
 For computational reasons, we will not include all predictors but only a smaller subset:
 
-```{code-cell} 
+```{code-cell} ipython3
 # Keep a total of 10 variables - the target ´Salary´ and 9  features.
 hitters_subset = hitters[["Salary", "CHits", "CAtBat", "CRuns", "CWalks", "Assists", "Hits", "HmRun", "Years", "Errors"]].copy()
 
@@ -53,7 +53,7 @@ hitters_subset.head()
 
 Let’s also take a look at the correlation matrix to check for potential multicollinearity, which can affect the stability of linear regression models.
 
-```{code-cell} 
+```{code-cell} ipython3
 import seaborn as sns
 
 sns.heatmap(hitters_subset.corr(), annot=True, cmap="coolwarm", fmt=".2f");
@@ -114,7 +114,7 @@ We first split our data into training and test dataset. Although the selection f
 ```{code-cell} ipython3
 from sklearn.model_selection import train_test_split
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 ```
 
 |Purpose                        	   | What is it for?                                   | When?                                               |
@@ -180,7 +180,7 @@ print(f"   Feature indices : {sfs_forward.k_feature_idx_}")
 print(f"   Feature names   : {sfs_forward.k_feature_names_}")
 ```
 
-You can see we ended up with the same three predictors as in best subset selection: `CWalks`, `Hits`, `Errors`, `HmRun`. However, this is not necessarily always the case — best subset and stepwise selection can, and often do, lead to different results. In our case we only had a small number of predictors, which makes it more likely to end up with the same subset.
+You can see we ended up with the same three predictors as in best subset selection: `CWalks`, `Hits`, `HmRun`. However, this is not necessarily always the case — best subset and stepwise selection can, and often do, lead to different results. In our case we only had a small number of predictors, which makes it more likely to end up with the same subset.
 
 
 ### Backward Stepwise Selection
@@ -223,7 +223,7 @@ display_quiz('quiz/SubsetSelection.json')
 
 #### What next?
 
-Once we have identified the features that are relevant for predicting the outcome, let`s evaluate the model performance and estimate true test error with the 4 predictors identified by Best Subset Selection and Forward Stepwise Seletion.
+Once we have identified the features that are relevant for predicting the outcome, let`s evaluate the model performance and estimate true test error with the thee predictors identified by Best Subset Selection and Forward Stepwise Seletion.
 
 ```{code-cell} ipython3
 import numpy as np
@@ -254,10 +254,10 @@ print(f"Test R²:   {r2_test:.4f}")
 
 So in sum:
 
-- On average, our predictions deviate from the actual salary by about 417 thousand dollars.
-- Our model explains only a small portion (~3%) of the variance in salary.
+- On average, our predictions deviate from the actual salary by about 426 thousand dollars.
+- Our model explains ~25% of the variance in salary.
 
 
 ### Regularization and Dimensionality Reduction
 
-As mentioned before, regularization and dimensionality reduction are two other measures of dealing with laarge numbers of predictors. Regularization techniques will be introduced in the [next session](2_Regularization), and dimensionality reduction will be introduced in the [Principal Component Analysis](10_PCA) session.
+As mentioned before, regularization and dimensionality reduction are two other measures of dealing with large numbers of predictors. Regularization techniques will be introduced in the [next session](2_Regularization), and dimensionality reduction will be introduced in the [Principal Component Analysis](10_PCA) session.
