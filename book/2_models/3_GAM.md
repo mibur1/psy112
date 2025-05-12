@@ -12,7 +12,7 @@ kernelspec:
   name: python3
 myst:
   substitutions:
-    ref_test: 1
+    splines: 1
 ---
 
 # <i class="fa-solid fa-circle-plus"></i> Generalized Additive Models
@@ -130,10 +130,14 @@ res = gam.fit()
 print(res.summary())
 ```
 
-For the B-splines, we chose:
+```{margin}
+Remember: B-splines are a series of piecewise polynomial functions that are joined smoothly at certain points called knots.
+```
+
+For the B-splines<sup>{{splines}}</sup> we choose:
 
 - `df=[6]*len(spline_features)` -> 6 basis functions per feature
-- `degree=[3]*len(spline_features)` -> cubic splines (degree 3) 
+- `degree=[3]*len(spline_features)` -> cubic splines (degree 3)
 
 The output includes parameter estimates for all spline basis functions and categorical variables:
 
@@ -148,8 +152,8 @@ import matplotlib.pyplot as plt
 fig, ax = plt.subplots(3,3, figsize=(7,7))
 
 for i, feature in enumerate(spline_features):
-    res.plot_partial(i, cpr=True, ax=ax[i // 3, i % 3])
-    ax[i // 3, i % 3].set_title(f"Partial Effect: {feature}")
+    res.plot_partial(i, cpr=True, ax=ax[i//3, i%3])
+    ax[i//3, i%3].set_title(f"Partial Effect: {feature}")
 
 plt.tight_layout()
 ```
