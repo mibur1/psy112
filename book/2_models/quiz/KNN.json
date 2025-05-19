@@ -1,22 +1,22 @@
 [{
-    "question": "Choosing k > 25 for kNN might seem unusually high. Based on the Iris dataset, which of the following are reasonable explanations for why this could still result in good performance?",
+    "question": "Which of the following statements are true for the kNN algorithm? (Multiple answers may be correct)",
     "type": "multiple_choice",
     "answers": [
         {
-            "answer": "Setosa is linearly separable and clearly distinct from the other two classes.",
-            "correct": true
-          },
-          {
-            "answer": "The dataset is relatively noise-free, making predictions from a large neighborhood more stable.",
-            "correct": true
-          },
-          {
-            "answer": "A high k-value leads to a highly flexible model that fits the data very closely.",
+            "answer": "Increasing the value of $k$ generally makes the model more flexible.",
             "correct": false
           },
           {
-            "answer": "Versicolor and Virginica are perfectly separable, so k has no influence on classification accuracy.",
-            "correct": false
+            "answer": "Decreasing the value of $k$ increases the model's sensitivity to noise.",
+            "correct": true
+          },
+          {
+            "answer": "A higher $k$ value results in smoother decision boundaries.",
+            "correct": true
+          },
+          {
+            "answer": "A lower $k$ value allows the model to capture more specific details of the data.",
+            "correct": true
           }
         ]
       }]

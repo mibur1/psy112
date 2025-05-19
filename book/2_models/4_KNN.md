@@ -159,8 +159,6 @@ As with all hyperparameters, there is no magical formula to determine the best v
 
 To do this, we’ll fit the k-Nearest Neighbors model using different $k$-values within a specified range. To evaluate which value performs best, we here use 5-fold cross validation. 
 
-1) Identifying the best *k*!
-
 ```{code-cell} ipython3
 import numpy as np 
 from sklearn.neighbors import KNeighborsClassifier
@@ -177,7 +175,7 @@ for k in k_range:
 
 # Plot
 fig, ax = plt.subplots()
-sns.lineplot(x = k_range, y = accuracies, marker = 'o')
+sns.lineplot(x = k_range, y = accuracies, marker = 'o', ax=ax)
 ax.set(xlabel="kNN", ylabel="accuracy");
 ```
 
@@ -211,7 +209,7 @@ Z = knn.predict(np.c_[xx.ravel(), yy.ravel()]).reshape(xx.shape)
 # Plot
 fig, ax = plt.subplots()
 ax.contourf(xx, yy, Z, alpha=0.3, cmap="Set2")
-sns.scatterplot(data=df_scaled, x="sepal length (cm)", y="sepal width (cm)", hue="class", ax=ax, palette='Set2')
+sns.scatterplot(data=df_scaled, x="sepal length (cm)", y="sepal width (cm)", hue="class", palette='Set2', ax=ax)
 ax.set(xlabel=df_scaled.columns[0], ylabel=df_scaled.columns[1], title=f"Decision Boundary with k = {best_k}");
 ```
 
