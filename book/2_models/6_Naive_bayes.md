@@ -21,6 +21,8 @@ https://animlbook.com/classification/naive_bayes/index.html
 
 https://jakevdp.github.io/PythonDataScienceHandbook/05.05-naive-bayes.html
 
+Many of the previously introduced machine learning models for regression and classification tasks are based on linear models. 
+
 
 Naïve Bayes applies Bayes' theorem under the assumption that predictors are independent within each class:
 
@@ -74,7 +76,7 @@ sns.set_theme(style="darkgrid")
 fig, ax = plt.subplots()
 
 ax.scatter(X[:, 0], X[:, 1], c=y, s=50, cmap='bwr')
-ax.set_title('Naive Bayes', size=14)
+ax.set_title('Naïve Bayes', size=14)
 
 x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
 y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
