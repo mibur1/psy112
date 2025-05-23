@@ -205,4 +205,4 @@ print('QDA Classification Report:')
 print(classification_report(y, qda.predict(X)))
 ```
 
-That's it! Please head to [Exercise 6](Exercises) and get some practical experience with LDA and QDA 😄
+That's it! You can now head to [Exercise 6](Exercises) to apply LDA and QDA yourself 😄

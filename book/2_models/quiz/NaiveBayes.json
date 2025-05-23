@@ -1,0 +1,22 @@
+[{
+    "question": "A person shows no nail biting and is not avoiding eye contact, but is fidgeting. What would be the Naïve Bayes classification?",
+    "type": "multiple_choice",
+    "answers": [ 
+        {
+            "answer": "Anxious",
+            "correct": false
+        },
+        {
+            "answer": "Not Anxious",
+            "correct": false
+        },
+        {
+            "answer": "Tie",
+            "correct": true
+        },
+        {
+            "answer": "Not possible to calculate",
+            "correct": false
+        }
+    ]
+}]
