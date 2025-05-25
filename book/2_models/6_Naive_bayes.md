@@ -52,7 +52,7 @@ This is useful because:
 - Bayes’ Theorem brings all this together!
 
 
-What we just did with anxiety and nail biting is exactly what a Naïve Bayes classifier does, just with more features** and more classes. In general machine learning notation, we replace:
+What we just did with anxiety and nail biting is exactly what a Naïve Bayes classifier does, just with more features and more classes. In general machine learning notation, we replace:
 
 - “Anxiety” with a class label $Y = k$
 - “Nail biting” (or more features) with a full observation $X = x$
@@ -74,7 +74,7 @@ We can then use this structure to build classifiers that estimate the most likel
 
 ## The Naïve Assumption
 
-To compute the likelihood term $P(X \mid Y = k)$—that is, how likely we are to observe a particular combination of features for a given class—we usually need a complex model that captures how all the features interact.
+To compute the likelihood term $P(X \mid Y = k)$ — that is, how likely we are to observe a particular combination of features for a given class—we usually need a complex model that captures how all the features interact.
 
 Naïve Bayes makes a simplifying assumption:
 
@@ -197,7 +197,28 @@ display_quiz("quiz/NaiveBayes.json", shuffle_answers=True)
 
 ---
 
-## Naïve Bayes in Python
+## Gaussian Naïve Bayes
+
+In Gaussian Naïve Bayes, we assume that the features are **continuous** and that their values follow a **normal distribution** for each class.
+
+This means that for each class $Y = k$ and each feature $X_j$:
+
+$$
+P(X_j = x_j \mid Y = k) = \frac{1}{\sqrt{2\pi\sigma_{jk}^2}} \exp\left( -\frac{(x_j - \mu_{jk})^2}{2\sigma_{jk}^2} \right)
+$$
+
+So the steps of Naïve Bayes for continuous data become:
+
+1. Estimate class priors: $P(Y = k)$ from class proportions
+2. Estimate means and variances $\mu_{jk}$ and $\sigma_{jk}^2$ for each feature and class
+3. Plug into the Gaussian formula to compute likelihoods
+4. Multiply likelihoods and prior, and choose the class with the highest posterior
+
+This is exactly what `GaussianNB()` in scikit-learn does under the hood.
+
+---
+
+## Gaussian Naïve Bayes in Python
 
 For a quick illustration, we can use the same simulated data as in the LDA/QDA session:
 
@@ -240,8 +261,8 @@ ax.scatter(X[:, 0], X[:, 1], c=y, s=50, cmap='bwr')
 x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
 y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
 
-xg = np.linspace(x_min, x_max, 60)
-yg = np.linspace(y_min, y_max, 40)
+xg = np.linspace(x_min, x_max, 300)
+yg = np.linspace(y_min, y_max, 200)
 xx, yy = np.meshgrid(xg, yg)
 Xgrid = np.vstack([xx.ravel(), yy.ravel()]).T
 
@@ -254,11 +275,44 @@ for label, color in enumerate(['blue', 'red']):
     ax.pcolorfast(xg, yg, Pm.reshape(xx.shape), alpha=0.4, cmap=color.title() + 's')
     ax.contour(xx, yy, P.reshape(xx.shape), levels=[0.01, 0.1, 0.5, 0.9], colors=color, alpha=0.2);
 
+# Plot decision boundary
+Z = nb.predict(np.c_[xx.ravel(), yy.ravel()]).reshape(xx.shape)
+ax.contour(xx, yy, Z, levels=[0.5], linewidths=2, colors='black')
+
 # Legend
 ax.set(xlabel="Feature 1", ylabel="Feature 2", title="Naïve Bayes Class Distributions")
 legend_elements = [
-    Line2D([], [], marker='o', linestyle='None', markerfacecolor='blue', markeredgewidth=0, label='Class 0', markersize=8),
-    Line2D([], [], marker='o', linestyle='None', markerfacecolor='red', markeredgewidth=0, label='Class 1', markersize=8)
+    Line2D([], [], marker='o', linestyle='None', markerfacecolor='blue',
+           markeredgewidth=0, label='Class 0', markersize=8),
+    Line2D([], [], marker='o', linestyle='None', markerfacecolor='red',
+           markeredgewidth=0, label='Class 1', markersize=8),
+    Line2D([], [], color='black', linestyle='-', linewidth=2, label='Decision boundary')
 ]
 ax.legend(handles=legend_elements);
 ```
+
+This plot visualises how the Gaussian Naïve Bayes model estimates the class distributions:
+
+- Each class is modelled as a multivariate Gaussian distribution (with independent features)
+- The coloured contours represent density levels of the Gaussian likelihoods $P(X \mid Y = k)$
+- The shaded background shows regions of higher probability under each class
+- The decision boundary between the two classes lies where the posterior probabilities are equal
+
+---
+
+## Summary
+
+| Feature                       | **LDA**                         | **QDA**                        | **Naïve Bayes**                               |
+|-------------------------------|---------------------------------|--------------------------------|-----------------------------------------------|
+| **Model Type**                | Generative                      | Generative                     | Generative                                    |
+| **Assumes Normality?**        | ✅ Yes (Multivariate Gaussian)  | ✅ Yes (Multivariate Gaussian) | ✅ Often (e.g. GaussianNB), but flexible      |
+| **Covariance Matrices**       | Shared across classes           | Separate for each class        | Diagonal (assumes independence)               |
+| **Feature Independence?**     | ❌ No                           | ❌ No                          | ✅ Yes (Naïve assumption)                     |
+| **Decision Boundary**         | Linear                          | Quadratic                      | Linear or non-linear (distribution-dependent) | 
+| **Likelihood Shape**          | Multivariate Gaussian           | Multivariate Gaussian          | Product of 1D distributions                   |
+| **Interpretability**          | High                            | Medium                         | High                                          |
+| **Flexibility**               | Low                             | Medium                         | High (especially for text/categorical data)   |
+| **Good for High Dimensions?** | ❌ Not ideal                    | ❌ Risk of overfitting         | ✅ Yes                                        |
+| **When to Use**               | Equal spread across classes     | Unequal class spreads          | Many features, text data, simple baseline     |
+
+That's it! You can now head to [Exercise 6](Exercises) to apply LDA, QDA, and Naïve Bayes yourself 😄
