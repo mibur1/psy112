@@ -257,9 +257,6 @@ from matplotlib.lines import Line2D
 sns.set_theme(style="darkgrid")
 fig, ax = plt.subplots()
 
-# Scatter plot of data points
-ax.scatter(X[:, 0], X[:, 1], c=y, s=50, cmap='bwr')
-
 # Grid for likelihood computation
 x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
 y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
@@ -275,12 +272,15 @@ for label, color in enumerate(['blue', 'red']):
     mu, std = X[mask].mean(0), X[mask].std(0)
     P = np.exp(-0.5 * (Xgrid - mu) ** 2 / std ** 2).prod(1)
     Pm = np.ma.masked_array(P, P < 0.03)
-    ax.pcolorfast(xg, yg, Pm.reshape(xx.shape), alpha=0.4, cmap=color.title() + 's')
+    ax.pcolormesh(xx, yy, Pm.reshape(xx.shape), shading='auto', alpha=0.4, cmap=color.title() + 's')
     ax.contour(xx, yy, P.reshape(xx.shape), levels=[0.01, 0.1, 0.5, 0.9], colors=color, alpha=0.2);
 
 # Plot decision boundary
 Z = nb.predict(np.c_[xx.ravel(), yy.ravel()]).reshape(xx.shape)
 ax.contour(xx, yy, Z, levels=[0.5], linewidths=2, colors='black')
+
+# Scatter plot
+ax.scatter(X[:, 0], X[:, 1], c=y, s=50, cmap='bwr')
 
 # Legend
 ax.set(xlabel="Feature 1", ylabel="Feature 2", title="Naïve Bayes Class Distributions")
@@ -313,7 +313,6 @@ This plot visualises how the Gaussian Naïve Bayes model estimates the class dis
 | **Feature Independence?**     | ❌ No                           | ❌ No                          | ✅ Yes (Naïve assumption)                     |
 | **Decision Boundary**         | Linear                          | Quadratic                      | Linear or non-linear (distribution-dependent) | 
 | **Likelihood Shape**          | Multivariate Gaussian           | Multivariate Gaussian          | Product of 1D distributions                   |
-| **Interpretability**          | High                            | Medium                         | High                                          |
 | **Flexibility**               | Low                             | Medium                         | High (especially for text/categorical data)   |
 | **Good for High Dimensions?** | ❌ Not ideal                    | ❌ Risk of overfitting         | ✅ Yes                                        |
 | **When to Use**               | Equal spread across classes     | Unequal class spreads          | Many features, text data, simple baseline     |
