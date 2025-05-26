@@ -37,7 +37,7 @@ LDA assumes that:
 - The features are distributed according to a multivariate Gaussian distribution
 - Classes share the same covariance matrix
 
-In detail, LDA requires 4 steps to make a decision:
+As a visual intuition, this means the class distributions look like ellipses with the same shape and orientation (but centered at different locations if there is a difference between the classes). In detail, LDA requires 4 steps to make a decision:
 
 - **Step 1**: Model the distribution of the predictors $X$ separately for each response class $Y$
 - **Step 2**: Use Bayes' theorem to calculate estimates for the posterior probability
@@ -83,7 +83,7 @@ where:
 
 ---
 
-When performing classification, we only need to compare which posterior probability is largest. Taking the logarithm preserves the order of the probabilities while simplifying multiplication into addition. Further, the evidence $P(X)$ is the same across all classes (because it is the sum over all classes) and therefore does not affect the relative ranking. This allows us to drop it safely and work with proportionality ($\propto$):
+When performing classification, we only need to compare which posterior probability is largest. Taking the logarithm preserves the order of the probabilities while simplifying multiplication into addition. Further, the evidence $P(X)$ is the same across all classes (because it is the sum over all classes) and therefore does not affect the relative ranking. This allows us to drop it and work with proportionality ($\propto$):
 
 $$
 \log P(Y = k | X) \propto \log P(X | Y = k) + \log P(Y = k)
@@ -93,7 +93,7 @@ $$
 
 **Step 3: Derive the Discriminant Function**
 
-We then substitute the multivariate Gaussian density into the log expression, expand the quadratic form, and remove terms independent of the class $k$. This will then result in the discriminant function $\delta_k(X)$:
+We can then perform some linear algebra (substitute the multivariate Gaussian density into the log expression, expand the quadratic form, and remove terms independent of the class $k$; see [James et al. (ISLR) Chapter 4.4](https://www.statlearning.com/) if you are interested in the details). This will then result in the discriminant function $\delta_k(X)$:
 
 $$
 \delta_k(X) = X^T \Sigma^{-1} \mu_k - \frac{1}{2} \mu_k^T \Sigma^{-1} \mu_k + \log(\pi_k)
@@ -173,11 +173,23 @@ qda = QDA()
 qda.fit(X, y);
 ```
 
-We can then plot the decision boundary and print the classification report:
+We can then print the classification report:
+
+```{code-cell} ipython3
+from sklearn.metrics import classification_report
+
+# Print classification report
+print('LDA Classification Report:')
+print(classification_report(y, lda.predict(X)))
+
+print('QDA Classification Report:')
+print(classification_report(y, qda.predict(X)))
+```
+
+To get a better intuitive understanding about the models, we can further plot the decision boundaries by making systematic predictions across a grid in the feature space and coloring it accordingly. It then becomes visible how the decision boundary is linear for LDA and quadratic for QDA:
 
 ```{code-cell} ipython3
 import numpy as np
-from sklearn.metrics import classification_report
 
 def plot_decision_boundary(model, X, y, ax):
     x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
@@ -185,7 +197,7 @@ def plot_decision_boundary(model, X, y, ax):
     xx, yy = np.meshgrid(np.linspace(x_min, x_max, 500), np.linspace(y_min, y_max, 500))
     Z = model.predict(np.c_[xx.ravel(), yy.ravel()])
     Z = Z.reshape(xx.shape)
-    ax.contourf(xx, yy, Z, alpha=0.4, cmap='bwr')
+    ax.contourf(xx, yy, Z, alpha=0.3, cmap='bwr')
     ax.scatter(X[:, 0], X[:, 1], c=y, cmap='bwr')
 
 # Plot decision boundaries
@@ -196,11 +208,4 @@ plot_decision_boundary(lda, X, y, ax[0])
 ax[1].set_title('QDA Decision Boundary')
 plot_decision_boundary(qda, X, y, ax[1])
 plt.show()
-
-# Print classification report
-print('LDA Classification Report:')
-print(classification_report(y, lda.predict(X)))
-
-print('QDA Classification Report:')
-print(classification_report(y, qda.predict(X)))
 ```

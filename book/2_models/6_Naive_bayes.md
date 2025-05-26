@@ -64,12 +64,13 @@ P(Y = k \mid X = x) = \frac{P(X = x \mid Y = k) \cdot P(Y = k)}{P(X = x)}
 $$
 
 Where:
+
 - $P(Y = k \mid X = x)$: **Posterior** – the probability of class $k$ given the features $x$
 - $P(X = x \mid Y = k)$: **Likelihood** – the probability of seeing those features if the class is $k$
 - $P(Y = k)$: **Prior** – how frequent the class is in general
 - $P(X = x)$: **Evidence** – the overall probability of seeing $x$ (same across all classes)
 
-We can then use this structure to build classifiers that estimate the most likely class $Y$ based on input features $X$!
+This is already everything we need to build classifiers that estimate the most likely class $Y$ based on input features $X$.
 
 
 ## The Naïve Assumption
@@ -107,6 +108,8 @@ $$
 ---
 
 ## The Algorithm
+
+To understand how Naïve Bayes works in practice, we will walk through a simple version of the algorithm using categorical (discrete) features: Discrete Naïve Bayes. Here, likelihoods are calculated from frequency tables rather than continuous distributions.
 
 ### 1. Estimate priors
 
@@ -214,7 +217,7 @@ So the steps of Naïve Bayes for continuous data become:
 3. Plug into the Gaussian formula to compute likelihoods
 4. Multiply likelihoods and prior, and choose the class with the highest posterior
 
-This is exactly what `GaussianNB()` in scikit-learn does under the hood.
+This is essentially what `GaussianNB()` in scikit-learn does under the hood.
 
 ---
 
