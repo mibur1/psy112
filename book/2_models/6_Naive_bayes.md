@@ -19,7 +19,7 @@ myst:
 
 Naïve Bayes classifiers, like LDA and QDA, are generative models. They aim to model how the data was generated for each class and use this knowledge to make predictions. The foundation of Naïve Bayes is Bayes’ Theorem.
 
-### Bayes’ Theorem
+## Bayes’ Theorem
 
 Imagine you're trying to assess whether someone is likely to be experiencing anxiety based on a behavioural cue like nail biting. What you're really after is:
 
