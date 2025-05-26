@@ -198,6 +198,41 @@ from jupyterquiz import display_quiz
 display_quiz("quiz/NaiveBayes.json", shuffle_answers=True)
 ```
 
+```{admonition} Solution
+:class: dropdown
+
+To solve this, we use the same priors and likelihoods as before, but change the feature values:
+
+- NB = **no** → use $P(\text{NB=no} \mid Y) = 1 - P(\text{NB=yes} \mid Y)$
+- FI = **yes**
+- EC = **yes** → so $P(\text{EC=yes} \mid Y) = 1 - P(\text{EC=no} \mid Y)$
+
+---
+
+**For Anxious (A):**
+
+$
+P(\text{A}) \cdot P(\text{NB=no} \mid \text{A}) \cdot P(\text{FI=yes} \mid \text{A}) \cdot P(\text{EC=yes} \mid \text{A}) \\
+= 0.6 \cdot (1 - 0.8) \cdot 0.7 \cdot (1 - 0.6) \\
+= 0.6 \cdot 0.2 \cdot 0.7 \cdot 0.4 = 0.0336
+$
+
+**For Not Anxious (NA):**
+
+$
+0.4 \cdot (1 - 0.3) \cdot 0.2 \cdot (1 - 0.4) \\
+= 0.4 \cdot 0.7 \cdot 0.2 \cdot 0.6 = 0.0336
+$
+```
+
+---
+
+**Result:** Both scores are equal → it's a **tie**.
+
+✅ **Correct answer: Tie**
+
+
+
 ---
 
 ## Gaussian Naïve Bayes
