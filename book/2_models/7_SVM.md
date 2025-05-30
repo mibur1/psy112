@@ -276,6 +276,35 @@ Cs are inherently binary classifiers but can be extended:
 * **One-vs-One**: $\binom{K}{2}$ classifiers for each pair of classes.
 * **One-vs-All**: K classifiers, each comparing one class against the rest.
 
+In `sklearn` you can, for example, use the `ovo` decision function for one-vs-one classification:
+
+```{code-cell} ipython3
+from sklearn.datasets import make_blobs
+
+# Generate data
+X, y = make_blobs(n_samples=150, centers=3, random_state=42, cluster_std=5)
+X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, random_state=42)
+
+# Plot
+fig, ax = plt.subplots()
+sns.scatterplot(x=X[:, 0], y=X[:, 1], hue=y, palette='deep', ax=ax, s=60)
+ax.set(xlabel="Feature 1", ylabel="Feature 2", title="Multiclass SVC")
+
+legend_elements = [
+    Line2D([0], [0], marker='o', linestyle='None', markersize=8, label='Class 0', markerfacecolor="#0173B2", markeredgecolor='None'),
+    Line2D([0], [0], marker='o', linestyle='None', markersize=8, label='Class 1', markerfacecolor="#DE8F05", markeredgecolor='None'),
+    Line2D([0], [0], marker='o', linestyle='None', markersize=8, label='Class 2', markerfacecolor="#029E73", markeredgecolor='None')]
+ax.legend(handles=legend_elements, loc="upper left", handlelength=1);
+plt.show()
+
+# Multiclass prediciton
+clf = SVC(kernel='rbf', decision_function_shape='ovo')
+clf.fit(X_train, y_train)
+
+y_pred = clf.predict(X_test)
+print("Multiclass classification report:\n", classification_report(y_test, y_pred))
+```
+
 ## Choosing Hyperparameters
 
 SVCs have a few hyperparameters. Please have a look at the [documentation](https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html#sklearn.svm.SVC) for a more in-depth overview. For the SVC used in the previous examples, the most important ones are:
@@ -339,4 +368,9 @@ ax.set_xticklabels(xticklabels, rotation=45);
 - The key ideas are rooted in geometry - finding the optimal hyperplane that separates data with maximum margin
 - With the use of kernels, SVCs extend effectively to non-linear decision boundaries
 - Multiclass classification can be done in a one-vs-one or one-vs-all approach
+- Even though we did not do so here, it is often useful to scale the predictors (see exercise)
 ```
+
+## Additional References
+
+For more information and an cool example for facial recognition, you can have look at the [Python Data Science Handbook](https://jakevdp.github.io/PythonDataScienceHandbook/05.07-support-vector-machines.html) notebook.
