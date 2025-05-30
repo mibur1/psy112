@@ -1,0 +1,22 @@
+[{
+    "question": "How many solutions exist for linearly separating the two classes?",
+    "type": "multiple_choice",
+    "answers": [ 
+        {
+            "answer": "None",
+            "correct": false
+        },
+        {
+            "answer": "Infinite",
+            "correct": true
+        },
+        {
+            "answer": "One",
+            "correct": false
+        },
+        {
+            "answer": "Two",
+            "correct": false
+        }
+    ]
+}]
