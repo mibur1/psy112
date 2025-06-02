@@ -135,9 +135,13 @@ clf = SVC(kernel='linear')
 clf.fit(X, y);
 ```
 
-We can then write a little helper function to visualize the decision function and supports:
+With a little helper function we can visualize the decision function and supports:
 
 ```{code-cell} ipython3
+---
+tags:
+  - hide-input
+---
 def plot_svc_decision_function(model, ax=None):
     """Plot the decision boundary and margins for a trained 2D SVC model."""
     # Set up grid
@@ -181,7 +185,7 @@ fig, ax = plt.subplots()
 sns.scatterplot(x=X[:, 0], y=X[:, 1], hue=y, s=60, ax=ax)
 ax.set(xlabel="Feature 1", ylabel="Feature 2")
 
-# Custom egend
+# Custom legend
 legend_elements = [
     Line2D([0], [0], marker='o', linestyle='None', markersize=8, label='Class 0', markerfacecolor="#0173B2", markeredgecolor='None'),
     Line2D([0], [0], marker='o', linestyle='None', markersize=8, label='Class 1', markerfacecolor="#DE8F05", markeredgecolor='None')]
@@ -317,6 +321,10 @@ As always, hyperparameters should be tuned using [cross-validation](book/1_basic
 
 
 ```{code-cell} ipython3
+---
+tags:
+  - hide-input
+---
 import pandas as pd
 from sklearn.model_selection import GridSearchCV
 

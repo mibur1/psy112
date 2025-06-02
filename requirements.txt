@@ -1,6 +1,7 @@
 jupyter-book
 numpy
 pandas
+scipy
 matplotlib
 seaborn
 plotly
@@ -13,3 +14,4 @@ mlxtend
 patsy
 ipywidgets
 ISLP
+xgboost
