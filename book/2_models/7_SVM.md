@@ -271,11 +271,9 @@ legend_elements = [
 ax.legend(handles=legend_elements, loc="upper left", handlelength=1);
 ```
 
-Notably, we now see that there are a lot more support vectors, especially when we fit a linear SVC to the data. This is because of the softening of the margins (???)
-
 ## Multiclass Classification
 
-Cs are inherently binary classifiers but can be extended:
+SVCs are inherently binary classifiers but can be extended:
 
 * **One-vs-One**: $\binom{K}{2}$ classifiers for each pair of classes.
 * **One-vs-All**: K classifiers, each comparing one class against the rest.
@@ -316,6 +314,12 @@ SVCs have a few hyperparameters. Please have a look at the [documentation](https
 * `C`: Regularisation parameter; trade-off between margin width and classification error.
 * `kernel`: `'linear'`, `'poly'`, `'rbf'`, `'sigmoid'`, or custom.
 * `gamma`: Kernel coefficient (for RBF, polynomial, and sigmoid kernels)
+
+```{admonition} Note
+:class: warning 
+
+In `sklearn` (and usually also MATLAB and R) `C` behaves inversely to what you were shown in the lecture. Small values of C will result in a wider margin, at the cost of misclassifications (high bias, low variance). Large values of C will give you a smaller margin and fit the training data more tightly (low bias, higher variance).
+```
 
 As always, hyperparameters should be tuned using [cross-validation](book/1_basics/3_resampling) to balance bias and variance. It often makes sense to use a [grid search](https://scikit-learn.org/stable/modules/grid_search.html) or related strategies to find the optimal solution:
 
@@ -381,4 +385,4 @@ ax.set_xticklabels(xticklabels, rotation=45);
 
 ## Additional References
 
-For more information and an cool example for facial recognition, you can have look at the [Python Data Science Handbook](https://jakevdp.github.io/PythonDataScienceHandbook/05.07-support-vector-machines.html) notebook.
+For more information and a cool example for facial recognition, you can have look at the [Python Data Science Handbook](https://jakevdp.github.io/PythonDataScienceHandbook/05.07-support-vector-machines.html) notebook.
