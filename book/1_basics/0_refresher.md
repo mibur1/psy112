@@ -20,7 +20,17 @@ myst:
 
 # <i class="fa-solid fa-repeat"></i> Recap: Regression Models
 
-One of the the most important concepts you learned about in the [psy111 seminar](https://mibur1.github.io/psy111) were (linear) regression models. Let's quickly recap this concept and how to implement it in Python.
+```{code-cell} ipython3
+:tags: [remove-input]
+from IPython.display import HTML
+import plotly.io as pio
+
+# Helper function to return a Plotly figure as self-contained HTML.
+def show_plotly(fig, include_js='cdn'):
+    return HTML(pio.to_html(fig, full_html=False, include_plotlyjs=include_js))
+```
+
+One of the the most important concepts in any multivariate statistics seminar such as [psy111](https://mibur1.github.io/psy111) are (linear) regression models. Let's quickly recap this concept and how to implement it in Python.
 
 Have a look at the following code, which creates some simulated data. Can you deduce from the code, what the underlying pattern is?
 
@@ -33,17 +43,17 @@ y = (x**3 + np.random.normal(0, 15, size=x.shape)) / 50
 
 df = pd.DataFrame({'x': x, 'y': y})
 ```
-
 <details>
 <summary><strong>Click to reveal the plot</strong></summary>
 
 Here you can see the data in a scatterplot, with a linear regression model fitted to the data. Do you think the linear model fits the data well?
 
+
 ```{code-cell} ipython3
 :tags: [remove-input]
+import plotly.graph_objects as go
 import numpy as np
 import pandas as pd
-import plotly.graph_objects as go
 
 import warnings
 warnings.filterwarnings("ignore", message=".*Polyfit may be poorly conditioned.*")
@@ -91,8 +101,8 @@ layout = go.Layout(
     legend=dict(font=dict(size=14)),
     margin=dict(l=10, r=10, t=30, b=20),
 )
-fig = go.Figure(data=data, layout=layout)
-fig
+fig = go.Figure(data=[scatter, regression], layout=layout)
+show_plotly(fig, include_js='cdn')
 ```
 </details>
 <br>
@@ -164,8 +174,8 @@ layout = go.Layout(
 )
 
 # Create the figure
-fig = go.Figure(data=data, layout=layout)
-fig
+fig = go.Figure(data=[scatter] + regression_traces, layout=layout)
+show_plotly(fig, include_js='cdn')
 ```
 
 As you probably expected, the R² increases as you increase the order of the polynomial in the regression model. However, this doesn't stop after the 3rd order polynomial (which is the true function that generated the data). The R² continues to increase until it hits 1 for a model that includes a 29th-order polynomial. You can see that the model now goes through every single one of the data points. This did not happen by chance! A polynomial of degree 29 can perfectly interpolate the present data, which consists of 30 data points. This is because a polynomial of degree n−1 has n coefficients, which can be uniquely determined to pass through n distinct points (given that all the x-values are distinct).
@@ -267,8 +277,8 @@ layout_test = go.Layout(
     margin=dict(l=10, r=10, t=30, b=20),
 )
 
-fig_test = go.Figure(data=data_test, layout=layout_test)
-fig_test
+fig_test = go.Figure(data=[test_scatter] + regression_traces_test, layout=layout_test)
+show_plotly(fig_test, include_js='cdn')
 ```
 
 ```{margin}
