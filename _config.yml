@@ -8,8 +8,8 @@ copyright: "2025"
 # Do not execute notebooks
 execute:
   execute_notebooks: "auto"
-  exclude_patterns: ["*/Exercises.ipynb"]
-
+  timeout: 500
+  exclude_patterns: ["*/Exercises.ipynb", "*solutions*.ipynb"]
 
 # Define the name of the latex output file for PDF builds
 latex:
@@ -42,9 +42,13 @@ sphinx:
     - _static/custom.js
   config:
     html_js_files:
-      - "https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"
+    - https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js
+    suppress_warnings: ["mystnb.unknown_mime_type"]
+
+    # Tell myst-nb to actually keep/render Plotly's MIME bundle
+    nb_mime_priority_overrides:
+      - [html, application/vnd.plotly.v1+json, 0]
     
 # Google colab launch button
 launch_buttons:
   colab_url: "https://colab.research.google.com"
-  

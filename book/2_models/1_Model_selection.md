@@ -206,13 +206,13 @@ print(f"   Feature indices : {sfs_backward.k_feature_idx_}")
 print(f"   Feature names   : {sfs_backward.k_feature_names_}")
 ```
 
-#### Subset Selection Summary
+#### Summary
 
-| Best Subset Selection            	  | Forward Stepwise Selection                        | Backward Stepwise Selection                          |
-|-------------------------------------|---------------------------------------------------|------------------------------------------------------|
-|**+** will find the best model       |**-** not guaranteed to find best model            |**-** not guaranteed to find best model               |
-|**-** may overfit with large p       |**+** possible to use when p is very large         |**+** possible to use when p is very large, given p<n |
-|**-** computationally very expensive |**+** computationally less demanding               |**+** computationally less demanding                  |
+| Method                | Finds Best Model? | Works for Large p?            | Works When (p>n)?          | Risk of Overfitting | Computational Cost         |
+| --------------------- | ----------------- | ----------------------------- |--------------------------- | ------------------- | -------------------------- |
+| **Best Subset**       | **+** Yes         | **-** No                      | **-** No                   | **-** High          | **-** Very high            |
+| **Forward Stepwise**  | **-** No          | **+** Yes (moderate/large p)  | **o** If model size < n    | **o** Moderate      | **+**Efficient             |
+| **Backward Stepwise** | **-** No          | **+** Yes (only if p < n)     | **-** No                   | **o** Moderate      | **o** Relatively Efficient |
 
 
 ```{code-cell} ipython3
