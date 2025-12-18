@@ -208,11 +208,11 @@ print(f"   Feature names   : {sfs_backward.k_feature_names_}")
 
 #### Summary
 
-| Method                | Finds Best Model? | Works for Large p?            | Works When (p>n)?          | Risk of Overfitting | Computational Cost         |
-| --------------------- | ----------------- | ----------------------------- |--------------------------- | ------------------- | -------------------------- |
-| **Best Subset**       | **+** Yes         | **-** No                      | **-** No                   | **-** High          | **-** Very high            |
-| **Forward Stepwise**  | **-** No          | **+** Yes (moderate/large p)  | **o** If model size < n    | **o** Moderate      | **+**Efficient             |
-| **Backward Stepwise** | **-** No          | **+** Yes (only if p < n)     | **-** No                   | **o** Moderate      | **o** Relatively Efficient |
+| Selection Method  | Finds best model? | Works for large p?        | Works for p>n?          | Computational cost         |
+| ------------------| ------------------| --------------------------|-------------------------| ---------------------------|
+| Best Subset       | **+** Yes         | **-** No                  | **-** No                | **-** Very high            |
+| Forward Stepwise  | **-** No          | **+** Moderate/large p    | **o** If model size < n | **+** Efficient            |
+| Backward Stepwise | **-** No          | **+** Yes (only if p < n) | **-** No                | **o** Relatively Efficient |
 
 
 ```{code-cell} ipython3
