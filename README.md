@@ -4,8 +4,6 @@
 
 # Statistical Learning with Python
 
-**NOTE: WORK IN PROGRESS**
-
 ## Online usage (recommended)
 
 Course materials for the psy112 seminar of the Neurocognitive Psychology Master's course at the University of Oldenburg. The content should primarily be accessed from the online book: [![Jupyter Book Badge](https://raw.githubusercontent.com/jupyter-book/jupyter-book/next/docs/media/images/badge.svg)](https://mibur1.github.io/psy112/)
