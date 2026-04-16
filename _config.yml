@@ -1,7 +1,7 @@
 title: Statistical Learning with Python
 author: Micha Burkhardt, Constanze Buschmann
 logo: logo.png
-copyright: "2025"
+copyright: "2026"
 
 # Reference: https://jupyterbook.org/en/stable/customize/config.html
 
@@ -9,7 +9,7 @@ copyright: "2025"
 execute:
   execute_notebooks: "auto"
   timeout: 500
-  exclude_patterns: ["*/Exercises.ipynb", "*solutions*.ipynb"]
+  exclude_patterns: ["*/Exercises.ipynb", "*solutions*.ipynb", "*README.md"]
 
 # Define the name of the latex output file for PDF builds
 latex:

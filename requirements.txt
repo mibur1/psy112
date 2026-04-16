@@ -15,3 +15,4 @@ patsy
 ipywidgets
 ISLP
 xgboost
+#tensorflow # remove to save workflow space, students can install it manually for the neural network chapter
