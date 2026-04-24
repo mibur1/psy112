@@ -72,7 +72,6 @@ features_drop = ["CRuns", "CAtBat"]
 hitters_subset = hitters_subset.drop(columns=features_drop)
 ```
 
-
 ## Handling big data in linear models
 
 ```{admonition} Handling big data
@@ -205,6 +204,28 @@ print(f"   Optimal # feats : {len(sfs_backward.k_feature_idx_)}")
 print(f"   Feature indices : {sfs_backward.k_feature_idx_}")
 print(f"   Feature names   : {sfs_backward.k_feature_names_}")
 ```
+
+### Scikit-learn Alternative
+
+Scikit-learn provides [`SequentialFeatureSelector`](https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.SequentialFeatureSelector.html) 
+as an alternative to `mlxtend`'s stepwise selection. It supports both forward and backward selection via the `direction` parameter:
+
+```{code-cell} ipython3
+from sklearn.feature_selection import SequentialFeatureSelector
+
+sfs_sklearn = SequentialFeatureSelector(
+    estimator=LinearRegression(),
+    n_features_to_select="auto",
+    direction="forward",
+    scoring="r2",
+    cv=5)
+
+sfs_sklearn.fit(X_train, y_train)
+
+print(f"   Selected features: {X_train.columns[sfs_sklearn.get_support()].tolist()}")
+```
+
+Note that you can here either specify `n_features_to_select` directly, or you can use `"auto"` with a `tol` parameter that stops adding features once the score improvement falls below the threshold.
 
 #### Summary
 
