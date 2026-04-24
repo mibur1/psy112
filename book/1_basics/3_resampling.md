@@ -196,7 +196,7 @@ print(f"Accuracy: {max(score_list)}")
 Comparing the two approaches, we see that the validation set approach shows a higher accuracy compared to CV. This tells us that our initial estimates were probably overly optimistic.
 ```
 
-**Try it yourself**: Change the number of folds $k$ and observe how the predicitions change. What do you feel like is a good tradeoff between bias and variance?
+**Try it yourself**: Change the number of folds $k$ and observe how the predicitions change. What do you feel like is a good tradeoff between bias and variance? **None**: We have 150 observations in the dataset, so your possible options are between 2 and 150 folds.
 
 <iframe src="https://trinket.io/embed/python3/c46516cf56de" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
 
@@ -236,7 +236,7 @@ For each bootstrap iteration:
 
 1. A new sample (the bootstrap sample) is drawn from the data.
 2. The model is trained on this bootstrap sample.
-3. The observations that were not included in that sample — called out-of-bag (OOB) samples — are used to test the model.
+3. The observations that were not included in that sample (the out-of-bag (OOB) samples) are used to test the model.
 
 Repeating this process many times gives multiple estimates of model performance. The variability among these estimates provides insight into the model’s uncertainty and stability. In contrast, cross-validation divides the data into fixed folds and does not resample with replacement. Cross-validation is generally better for estimating predictive accuracy, while bootstrapping is often used to assess the uncertainty of model parameters or performance estimates. 
 
@@ -286,4 +286,4 @@ for i in range(n_iterations):
 print("\nMean Accuracy:", np.mean(scores))
 ```
 
-As you can see, the prediction accuracies are typically higher than those from cross-validation. This is expected because bootstrapping reuses parts of the same data across samples, leading to some overlap between training and evaluation data.
+Because the same observations are reused across many bootstrap iterations (serving as training data in some and test data in others), the resulting performance estimates are correlated and can behave differently from cross-validation estimates.
