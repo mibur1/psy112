@@ -3,7 +3,7 @@
     "type": "multiple_choice",
     "answers": [ 
         {
-            "answer": "For best subset selection you have to test 2^p models.",
+            "answer": "For best subset selection you have to test 2^p - 1 models.",
             "correct": true
         },
         {

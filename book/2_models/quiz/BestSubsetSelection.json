@@ -5,14 +5,14 @@
     "answers": [
         {
             "type": "value",
-            "value": 512,
+            "value": 511,
             "correct": true,
             "feedback": "Correct!"  
         },
         {
             "type": "default",
             "correct": false,
-            "feedback": "Not quite.  Remember: Best Subset Selection tries all possible combinations of predictors (2^p models)."
+            "feedback": "Not quite.  Remember: Best Subset Selection tries all possible combinations of predictors (2^p - 1 models)."
         }
     ]
 }]

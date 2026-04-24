@@ -14,7 +14,7 @@ kernelspec:
 
 # <i class="fa-brands fa-python"></i> Model Selection
 
-In neurocognitive psychology, we often collect huge amounts of data — sometimes thousands of measurements from different brain regions or many behavioral scores. Having more information can, in theory, help us make better predictions, but it also brings risks: too many variables can make analyses infeasible, lead to false discoveries, or cause models to learn noise instead of real effects. 
+In neurocognitive psychology, we often collect huge amounts of data. Sometimes we can have thousands of measurements from different brain regions or many behavioral scores. Having more information can, in theory, help us make better predictions, but it also brings risks: too many variables can make analyses infeasible, lead to false discoveries, or cause models to learn noise instead of real effects. 
 
 
 ## The large p issue
@@ -180,7 +180,7 @@ print(f"   Feature indices : {sfs_forward.k_feature_idx_}")
 print(f"   Feature names   : {sfs_forward.k_feature_names_}")
 ```
 
-You can see we ended up with the same three predictors as in best subset selection: `CWalks`, `Hits`, `HmRun`. However, this is not necessarily always the case — best subset and stepwise selection can, and often do, lead to different results. In our case we only had a small number of predictors, which makes it more likely to end up with the same subset.
+You can see we ended up with the same three predictors as in best subset selection: `CWalks`, `Hits`, `HmRun`. However, this is not necessarily always the cas! Best subset and stepwise selection can, and often do, lead to different results. In our case we only had a small number of predictors, which makes it more likely to end up with the same subset.
 
 
 ### Backward Stepwise Selection
