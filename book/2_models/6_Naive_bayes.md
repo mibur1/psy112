@@ -337,16 +337,12 @@ This plot visualises how the Gaussian Naïve Bayes model estimates the class dis
 
 ## Summary
 
-| Feature                       | **LDA**                         | **QDA**                        | **Naïve Bayes**                               |
-|-------------------------------|---------------------------------|--------------------------------|-----------------------------------------------|
-| **Model Type**                | Generative                      | Generative                     | Generative                                    |
-| **Assumes Normality?**        | ✅ Yes (Multivariate Gaussian)  | ✅ Yes (Multivariate Gaussian) | ✅ Often (e.g. GaussianNB), but flexible      |
-| **Covariance Matrices**       | Shared across classes           | Separate for each class        | Diagonal (assumes independence)               |
-| **Feature Independence?**     | ❌ No                           | ❌ No                          | ✅ Yes (Naïve assumption)                     |
-| **Decision Boundary**         | Linear                          | Quadratic                      | Linear or non-linear (distribution-dependent) | 
-| **Likelihood Shape**          | Multivariate Gaussian           | Multivariate Gaussian          | Product of 1D distributions                   |
-| **Flexibility**               | Low                             | Medium                         | High (especially for text/categorical data)   |
-| **Good for High Dimensions?** | ❌ Not ideal                    | ❌ Risk of overfitting         | ✅ Yes                                        |
-| **When to Use**               | Equal spread across classes     | Unequal class spreads          | Many features, text data, simple baseline     |
+| Aspect                             | **LDA**                        | **QDA**                                 | **Naïve Bayes**                                       |
+|------------------------------------|--------------------------------|-----------------------------------------|-------------------------------------------------------|
+| **Model type**                     | Generative                     | Generative                              | Generative                                            |
+| **Class distribution**             | Gaussian, shared covariance    | Gaussian, separate covariance per class | Product of independent 1D distributions               |
+| **Assumes feature independence?**  | ❌ No                          | ❌ No                                   | ✅ Yes (the "naïve" assumption)                       |
+| **Decision boundary**              | Linear                         | Quadratic                               | Quadratic (for Gaussian NB)                           |
+| **When to use**                    | Classes share a similar spread | Classes have clearly different spreads  | Many features, text/categorical data, quick baseline  |
 
 That's it! You can now head to [Exercise 6](Exercises) to apply LDA, QDA, and Naïve Bayes yourself 😄

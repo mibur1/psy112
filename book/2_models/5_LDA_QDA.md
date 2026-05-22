@@ -166,10 +166,10 @@ Fitting the model is straightforward. However, please have a look at the [docume
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA, \
                                           QuadraticDiscriminantAnalysis as QDA
 
-lda = LDA()
+lda = LDA(store_covariance=True)
 lda.fit(X, y)
 
-qda = QDA()
+qda = QDA(store_covariance=True)
 qda.fit(X, y);
 ```
 
@@ -186,26 +186,60 @@ print('QDA Classification Report:')
 print(classification_report(y, qda.predict(X)))
 ```
 
-To get a better intuitive understanding about the models, we can further plot the decision boundaries by making systematic predictions across a grid in the feature space and coloring it accordingly. It then becomes visible how the decision boundary is linear for LDA and quadratic for QDA:
+Because LDA and QDA are generative models, we can do more than just draw a decision boundary — we can visualise the actual class distributions the models learned. Each class is modelled as a multivariate Gaussian, so we can plot its density contours together with the resulting decision boundary:
 
 ```{code-cell} ipython3
 import numpy as np
+import seaborn as sns
+from scipy.stats import multivariate_normal
+from matplotlib.lines import Line2D
 
-def plot_decision_boundary(model, X, y, ax):
+sns.set_theme(style="darkgrid")
+
+def plot_distributions(model, X, y, ax, title):
+    # Grid over the feature space
     x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
     y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
-    xx, yy = np.meshgrid(np.linspace(x_min, x_max, 500), np.linspace(y_min, y_max, 500))
-    Z = model.predict(np.c_[xx.ravel(), yy.ravel()])
-    Z = Z.reshape(xx.shape)
-    ax.contourf(xx, yy, Z, alpha=0.3, cmap='bwr')
-    ax.scatter(X[:, 0], X[:, 1], c=y, cmap='bwr')
+    xx, yy = np.meshgrid(np.linspace(x_min, x_max, 300), np.linspace(y_min, y_max, 300))
+    Xgrid = np.c_[xx.ravel(), yy.ravel()]
 
-# Plot decision boundaries
+    # Plot the Gaussian distribution learned for each class
+    for k, color in enumerate(['blue', 'red']):
+        mu = model.means_[k]
+        # LDA shares one covariance matrix, QDA stores one per class
+        cov = model.covariance_[k] if isinstance(model.covariance_, list) else model.covariance_
+        P = multivariate_normal(mean=mu, cov=cov).pdf(Xgrid)
+        P = (P / P.max()).reshape(xx.shape)  # normalise so the peak is 1
+        Pm = np.ma.masked_array(P, P < 0.03)
+        ax.pcolormesh(xx, yy, Pm, shading='auto', alpha=0.4, cmap=color.title() + 's')
+        ax.contour(xx, yy, P, levels=[0.01, 0.1, 0.5, 0.9], colors=color, alpha=0.3)
+
+    # Decision boundary
+    Z = model.predict(Xgrid).reshape(xx.shape)
+    ax.contour(xx, yy, Z, levels=[0.5], linewidths=2, colors='black')
+
+    # Data points
+    ax.scatter(X[:, 0], X[:, 1], c=y, s=40, cmap='bwr')
+    ax.set(title=title, xlabel="Feature 1", ylabel="Feature 2")
+
 fig, ax = plt.subplots(1, 2, figsize=(12, 5))
-ax[0].set_title('LDA Decision Boundary')
-plot_decision_boundary(lda, X, y, ax[0])
+plot_distributions(lda, X, y, ax[0], "LDA Class Distributions")
+plot_distributions(qda, X, y, ax[1], "QDA Class Distributions")
 
-ax[1].set_title('QDA Decision Boundary')
-plot_decision_boundary(qda, X, y, ax[1])
+legend_elements = [
+    Line2D([], [], marker='o', linestyle='None', markerfacecolor='blue',
+           markeredgewidth=0, label='Class 0', markersize=8),
+    Line2D([], [], marker='o', linestyle='None', markerfacecolor='red',
+           markeredgewidth=0, label='Class 1', markersize=8),
+    Line2D([], [], color='black', linestyle='-', linewidth=2, label='Decision boundary')
+]
+ax[1].legend(handles=legend_elements)
 plt.show()
 ```
+
+This makes the generative nature of both models explicit:
+
+- Each class is modelled as a multivariate Gaussian, shown by the coloured density contours
+- **LDA** uses a single shared covariance matrix, so both classes have the same ellipse shape and orientation. This is what makes its decision boundary linear
+- **QDA** estimates a separate covariance matrix per class, so the ellipses can differ in shape and orientation, producing a quadratic boundary
+- The decision boundary (black line) lies where the posterior probabilities of the two classes are equal
