@@ -1,18 +1,11 @@
 ---
-jupytext:
-  formats: md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.11.5
+short_title: Model selection
 kernelspec:
-  display_name: Python 3
-  language: python
   name: python3
+  display_name: Python 3
 ---
 
-# <i class="fa-brands fa-python"></i> Model Selection
+# ✅ Model Selection
 
 In neurocognitive psychology, we often collect huge amounts of data. Sometimes we can have thousands of measurements from different brain regions or many behavioral scores. Having more information can, in theory, help us make better predictions, but it also brings risks: too many variables can make analyses infeasible, lead to false discoveries, or cause models to learn noise instead of real effects. 
 
@@ -45,7 +38,7 @@ For computational reasons, we will not include all predictors but only a smaller
 # Keep a total of 10 variables - the target ´Salary´ and 9  features.
 hitters_subset = hitters[["Salary", "CHits", "CAtBat", "CRuns", "CWalks", "Assists", "Hits", "HmRun", "Years", "Errors"]].copy()
 
-# Remove rows with missing vlaues
+# Remove rows with missing values
 hitters_subset.dropna(inplace=True)
 
 hitters_subset.head()
@@ -61,8 +54,8 @@ sns.heatmap(hitters_subset.corr(), annot=True, cmap="coolwarm", fmt=".2f");
 
 The heatmap reveals strong correlations between several predictors:
 
-- `CHits` and `CAtBat` show a correlation of 1,
-- `CHits` and `CRuns` have a very strong correlation of 0.98,
+- `CHits` and `CAtBat` correlate at 0.995 (displayed as 1.00 after rounding)
+- `CHits` and `CRuns` correlate at 0.985
 
 We thus remove two of the correlated features:
 
@@ -74,8 +67,7 @@ hitters_subset = hitters_subset.drop(columns=features_drop)
 
 ## Handling big data in linear models
 
-```{admonition} Handling big data
-:class: hint
+```{hint} Handling big data
 
 To handle large datasets efficiently in linear modeling, we will introduce three methods:
 
@@ -85,16 +77,16 @@ To handle large datasets efficiently in linear modeling, we will introduce three
 ```
 
 ## Subset Selection
-In subset selection we identify a subset of *p* predictos that are truly related to the outcome. The model get fitted using least squares on the reduces set of variables.
+In subset selection we identify a subset of the $p$ predictors that are truly related to the outcome. The model is then fitted using least squares on the reduced set of variables.
 
-How do we determine which variables are relevant?! 
+How do we determine which variables are relevant?
 
 ###  Best Subset Selection
 
 We will start with performing Best Subset Selection (also called exhaustive search) as implemented in the `mlxtend` package. It has great documentation, e.g. for the [exhaustive search](https://rasbt.github.io/mlxtend/user_guide/feature_selection/ExhaustiveFeatureSelector/). In short, this approach is a brute-force evaluation of feature subsets. A specific performance metric (e.g. MSE, R², or accuracy) is optimized given an arbitrary regressor or classifier. For example, if we have 4 features, the algorithm will evaluate all 15 possible combinations of features.
 
 ```{code-cell} ipython3
-:tags: ["remove-input"]
+:tags: [remove-input]
 from jupyterquiz import display_quiz
 display_quiz("quiz/BestSubsetSelection.json", shuffle_answers=True)
 ```
@@ -244,14 +236,14 @@ display_quiz('quiz/SubsetSelection.json')
 
 #### What next?
 
-Once we have identified the features that are relevant for predicting the outcome, let`s evaluate the model performance and estimate true test error with the thee predictors identified by Best Subset Selection and Forward Stepwise Seletion.
+All three procedures converged on the same three predictors here, so let's evaluate the model performance and estimate the true test error using that subset.
 
 ```{code-cell} ipython3
 import numpy as np
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.linear_model import LinearRegression
 
-selected_features = list(sfs_backward.k_feature_names_)
+selected_features = list(sfs_forward.k_feature_names_)
 
 # Subset the data
 X_train_subset = X_train[selected_features]
@@ -261,7 +253,7 @@ X_test_subset = X_test[selected_features]
 model = LinearRegression()
 model.fit(X_train_subset, y_train)
 
-# Get predictions anf performance
+# Get predictions and performance
 y_pred = model.predict(X_test_subset)
 
 mse_test = mean_squared_error(y_test, y_pred)
@@ -281,4 +273,4 @@ So in sum:
 
 ### Regularization and Dimensionality Reduction
 
-As mentioned before, regularization and dimensionality reduction are two other measures of dealing with large numbers of predictors. Regularization techniques will be introduced in the [next session](2_Regularization), and dimensionality reduction will be introduced in the [Principal Component Analysis](10_PCA) session.
+As mentioned before, regularization and dimensionality reduction are two other measures of dealing with large numbers of predictors. Regularization techniques will be introduced in the [next session](2_Regularization.md), and dimensionality reduction will be introduced in the [Principal Component Analysis](10_PCA.md) session.

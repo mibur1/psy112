@@ -1,23 +1,13 @@
 ---
-jupytext:
-  formats: md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.11.5
+short_title: SVMs
 kernelspec:
-  display_name: Python 3
-  language: python
   name: python3
-myst:
-  substitutions:
-    ref_test: 1
+  display_name: Python 3
 ---
 
-# <i class="fa-solid fa-gear"></i> Support Vector Machines
+# ⚙️ Support Vector Machines
 
-After a brief excursion into generative models such as [LDA & QDA](5_LDA_QDA) or [Naïve Bayes](6_Naive_Bayes), we will now again discuss a discriminative family of models: Support Vector Machines (SVM). SVMs are powerful supervised learning models used for classification and regression tasks. When used for classification, they are called Support Vector Classifiers (SVC).
+After a brief excursion into generative models such as [LDA & QDA](5_LDA_QDA.md) or [Naïve Bayes](6_Naive_bayes.md), we will now again discuss a discriminative family of models: Support Vector Machines (SVM). SVMs are powerful supervised learning models used for classification and regression tasks. When used for classification, they are called Support Vector Classifiers (SVC).
 
 Let's consider some simulated classification data:
 
@@ -45,15 +35,14 @@ ax.legend(handles=legend_elements, loc="upper left", handlelength=1);
 ```
 
 ```{code-cell} ipython3
-:tags: ["remove-input"]
+:tags: [remove-input]
 from jupyterquiz import display_quiz
 display_quiz("quiz/SVC.json", shuffle_answers=True)
 ```
 
-```{admonition} Solution
-:class: dropdown
+```{dropdown} Solution
 
-There are infinite ways to separate the two classes because you can find an infinte amount of lines which perfectly separate them.
+There are infinite ways to separate the two classes because you can find an unlimited number of lines which perfectly separate them.
 ```
 
 If we visualise this and add a new data point for classification a potential issue becomes apparent. For some models, this data point would fall into Class 0 and for others into Class 1:
@@ -126,7 +115,7 @@ If the data is not perfectly separable (either because the classes overlap, or t
 
 ### Example 1: Linear Classification
 
-Fitting a SVC is straigthforward:
+Fitting a SVC is straightforward:
 
 ```{code-cell} ipython3
 from sklearn.svm import SVC
@@ -138,10 +127,7 @@ clf.fit(X, y);
 With a little helper function we can visualize the decision function and supports:
 
 ```{code-cell} ipython3
----
-tags:
-  - hide-input
----
+:tags: [hide-input]
 def plot_svc_decision_function(model, ax=None):
     """Plot the decision boundary and margins for a trained 2D SVC model."""
     # Set up grid
@@ -299,7 +285,7 @@ legend_elements = [
 ax.legend(handles=legend_elements, loc="upper left", handlelength=1);
 plt.show()
 
-# Multiclass prediciton
+# Multiclass prediction
 clf = SVC(kernel='rbf', decision_function_shape='ovo')
 clf.fit(X_train, y_train)
 
@@ -315,8 +301,7 @@ SVCs have a few hyperparameters. Please have a look at the [documentation](https
 * `kernel`: `'linear'`, `'poly'`, `'rbf'`, `'sigmoid'`, or custom.
 * `gamma`: Kernel coefficient (for RBF, polynomial, and sigmoid kernels)
 
-```{admonition} Note
-:class: warning 
+```{warning} Note
 
 In `sklearn` (and usually also MATLAB and R) `C` behaves inversely to what you were shown in the lecture. Small values of C will result in a wider margin, at the cost of misclassifications (high bias, low variance). Large values of C will give you a smaller margin and fit the training data more tightly (low bias, higher variance).
 ```
@@ -325,10 +310,7 @@ As always, hyperparameters should be tuned using [cross-validation](book/1_basic
 
 
 ```{code-cell} ipython3
----
-tags:
-  - hide-input
----
+:tags: [hide-input]
 import pandas as pd
 from sklearn.model_selection import GridSearchCV
 
@@ -373,8 +355,7 @@ ax.set(xticks=xticks, yticks=yticks, yticklabels=yticklabels, title="Mean CV Acc
 ax.set_xticklabels(xticklabels, rotation=45);
 ```
 
-```{admonition} Summary
-:class: note 
+```{note} Summary
 
 - Support Vector Classifiers are a robust and versatile tool for classification tasks
 - The key ideas are rooted in geometry - finding the optimal hyperplane that separates data with maximum margin

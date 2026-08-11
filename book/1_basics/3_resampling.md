@@ -1,29 +1,18 @@
 ---
-jupytext:
-  formats: md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.11.5
+short_title: Resampling
 kernelspec:
-  display_name: Python 3
-  language: python
   name: python3
-myst:
-  substitutions:
-    hyperparam: 1
+  display_name: Python 3
 ---
 
-# <i class="fa-solid fa-dice"></i> Resampling Strategies
+# 🎲 Resampling Strategies
 
 As future data scientists, you are probably well aware of the challenges involved in data collection — time, cost, and the complexities of experimental design often make large datasets hard to come by. However, robust predictive modeling is critical not only because extensive datasets can be rare, but also because ensuring that models generalize well to new data is often an essential question.
 
 Resampling methods offer a powerful approach to assess model performance and mitigate overfitting. Rather than relying on a single train-test split, which can yield performance estimates that vary significantly depending on the split, resampling techniques repeatedly draw samples from your data. This process simulates multiple independent training and test sets, providing a more stable and reliable evaluation of your model.
 
 
-```{admonition} Resampling Strategies
-:class: hint
+```{hint} Resampling Strategies
 
 Two of the most widely used resampling methods are:
 
@@ -35,7 +24,7 @@ Two of the most widely used resampling methods are:
 
 We will use the famous [Iris](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html) dataset, which contains 150 samples from three species of the iris plant (iris setosa, iris virginica and iris versicolor). The data contains four features: the length and the width of the sepals and petals (in centimeters).
 
-```{code-cell} 
+```{code-cell} ipython3
 import seaborn as sns
 import pandas as pd
 from sklearn import datasets
@@ -48,7 +37,7 @@ df['class'] = pd.Categorical.from_codes(iris.target, iris.target_names)
 df.describe()
 ```
 
-```{code-cell} 
+```{code-cell} ipython3
 sns.scatterplot(data=df, x='sepal length (cm)', y='sepal width (cm)', hue="class");
 ```
 
@@ -69,7 +58,7 @@ Hyperparameters are parameters that are not learned from the data but set by the
 The simplest form of cross validation is to simply split the dataset into two parts:
 
 - *Training set*: Part of the data used for training
-- *Validation set*: Part of the data used for testing (e.g. across different models and hyperparameters<sup>{{hyperparam}}</sup>)
+- *Validation set*: Part of the data used for testing (e.g. across different models and hyperparameters)
 
 
 ```{figure} figures/ValidationSet.drawio.png
@@ -125,12 +114,19 @@ from jupytercards import display_flashcards
 display_flashcards('quiz/validation_set.json');
 ```
 
-**Hands on**: In the editor below, we perform a classification for two splits in the the data. Please modify the code to first use 80% of the data for testing and 20% for training, and second to use 20% for training and 80% for testing. Before evaluating each model, think about what kind of results you would expect. Which model do you think will perform better?
+**Try it yourself**: the split *ratio* matters too. Before running the cell below, think about what you expect: is it better to train on 80% of the data and test on 20%, or the other way round?
 
-<iframe src="https://trinket.io/embed/python3/48c2802e1e16" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+```{code-cell} ipython3
+for test_size in [0.2, 0.5, 0.8]:
+    X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=test_size, random_state=42)
+    acc = svm.SVC(kernel='linear').fit(X_tr, y_tr).score(X_te, y_te)
+    print(f"train on {1 - test_size:.0%} / test on {test_size:.0%}"
+          f"   ->   {len(X_tr):>3} training samples, accuracy = {acc:.3f}")
+```
 
-```{admonition} Summary
-:class: hint
+Training on more data generally gives a better model, but it also leaves fewer test samples, so the accuracy estimate itself becomes noisier. That is the tradeoff the validation set approach cannot escape.
+
+```{hint} Summary
 
 The validation set approach is a quick and easy way to check how well a model performs. However, it has a major flaw: it puts all its trust in a single data split which can doom a great model or trick us into thinking a weak model performs better than it actually does.
 ```
@@ -141,7 +137,7 @@ The validation set approach is a quick and easy way to check how well a model pe
 
 To get more robust performance estimates, we need something smarter. Rather than worrying about if the split of data used for training and validation is biased, we will perform this splitting multiple times and use all of the splits in turn.
 
-In k-fold CV we randomly dive the dataset into $k$ equal-sized folds. In each fold, one sample is then designated as the validation set, while the remaining $k-1$ samples are the training sets. The fitting process is repeated $k$-times, each time using a different fold as the validation set. At the end of the process, we can compute the average accuracy across all validation sets to obtain a more reliable estimate of the model's overall performance.
+In k-fold CV we randomly divide the dataset into $k$ equally sized **folds**. In each round, one fold is designated as the validation set, while the remaining $k-1$ folds form the training set. The fitting process is repeated $k$ times, each time using a different fold as the validation set. At the end of the process, we can compute the average accuracy across all validation folds to obtain a more reliable estimate of the model's overall performance.
 
 ```{figure} figures/CV.drawio.png
 :name: CV
@@ -155,9 +151,10 @@ Let`s try it on our data:
 
 
 ```{code-cell} ipython3
+import numpy as np
 from sklearn.model_selection import KFold, cross_val_score
 
-k_fold = KFold(n_splits = 5)
+k_fold = KFold(n_splits=5, shuffle=True, random_state=42)
 model = svm.SVC(kernel='linear')
 
 scores = cross_val_score(model, X, y, cv=k_fold) 
@@ -190,18 +187,45 @@ print(f"Best performing model in split {score_list.index(max(score_list))}.")
 print(f"Accuracy: {max(score_list)}")
 ```
 
-```{admonition} Validatation set vs. k-fold
-:class: note
+:::{warning} `shuffle=True` is not optional here
+`KFold` walks through the rows **in the order they appear** unless you ask it to shuffle, and the iris rows are sorted by species. Without shuffling the first fold would be nothing but setosa flowers, and the model would be tested on a class distribution it barely saw in training.
+:::
 
-Comparing the two approaches, we see that the validation set approach shows a higher accuracy compared to CV. This tells us that our initial estimates were probably overly optimistic.
+Try it and watch what happens:
+
+```{code-cell} ipython3
+scores_unshuffled = cross_val_score(model, X, y, cv=KFold(n_splits=5))
+print(f"Without shuffling: {np.round(scores_unshuffled, 3)} -> mean {scores_unshuffled.mean():.3f}")
 ```
 
-**Try it yourself**: Change the number of folds $k$ and observe how the predicitions change. What do you feel like is a good tradeoff between bias and variance? **None**: We have 150 observations in the dataset, so your possible options are between 2 and 150 folds.
+That 0.61 is not a property of the model, it is an artefact of the row ordering. Whenever your data has structure in its row order (sorted by group, collected by session, ordered in time), shuffling or a stratified splitter matters more than the choice of $k$.
 
-<iframe src="https://trinket.io/embed/python3/c46516cf56de" width="100%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+For classification it is usually even better to use `StratifiedKFold`, which additionally keeps the class proportions constant in every fold. Passing a plain integer to `cross_val_score` does this for you automatically:
 
-```{admonition} The choice of $k$
-:class: note 
+```{code-cell} ipython3
+scores_stratified = cross_val_score(svm.SVC(kernel='linear'), X, y, cv=5)
+print(f"Average accuracy: {scores_stratified.mean():.3f}")
+```
+
+```{note} Validation set vs. k-fold
+The two approaches land in the same region, but they say different things. The single validation split gave us *one* draw from a wide distribution; the k-fold estimate averages over five of them and is therefore far less dependent on luck.
+
+Do not read a small difference between the two as evidence that one is "optimistic" and the other "honest" — both estimate the same quantity, the cross-validated one just does it with less variance.
+```
+
+**Try it yourself**: change the number of folds $k$ below and watch what happens. We have 150 observations, so $k$ can range from 2 to 150.
+
+```{code-cell} ipython3
+for k in [2, 5, 10, 20, 50]:
+    cv = KFold(n_splits=k, shuffle=True, random_state=42)
+    sc = cross_val_score(svm.SVC(kernel='linear'), X, y, cv=cv)
+    print(f"k = {k:>2}   mean accuracy = {sc.mean():.3f}   "
+          f"std across folds = {sc.std():.3f}   ({k} model fits)")
+```
+
+Notice that the *mean* barely moves once $k \ge 5$, while the standard deviation across folds keeps growing: with more folds each test set is smaller, so each individual fold score is noisier even though their average is stable. The extra compute buys very little beyond $k = 5$ or $10$.
+
+```{note} The choice of $k$
 
 Choosing an appropriate k involves a tradeoff between bias, variance, and computational cost. A higher k generally provides a more stable and reliable estimate but comes with higher computational cost and also requires a sufficiently big dataset to still have a representative test set.
  

@@ -1,25 +1,17 @@
 ---
-jupytext:
-  formats: md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.11.5
+short_title: Bias-variance
 kernelspec:
-  display_name: Python 3
-  language: python
   name: python3
+  display_name: Python 3
 ---
 
-# <i class="fa-solid fa-handshake"></i> Bias-Variance Tradeoff
+# ⚖️ Bias-Variance Tradeoff
 
 Before we dive into the concept of bias, let’s briefly recap some theoretical concepts you learned about in the lecture. When we talk about fitting machine learning models, we are referring to the process of estimating a function $f$ that best represents the relationship between an outcome and a set of labelled data (in supervised learning) or to uncover structural patterns in unlabelled data (in unsupervised learning). While the estimated function $\hat{f}$​ conveys important information about the data from which it was derived (the training data), our primary interest is in using this function to make accurate predictions for future cases in new, unseen data sets. 
 
 The fundamental question in statistical learning is how well $\hat{f}$​ will perform on these future data sets, which brings us to the concept of the *bias-variance tradeoff*. Bias occurs when a model is too simple to capture the underlying complexities of the data, leading to systematic inaccuracies in its predictions. Variance measures how much the model's predictions fluctuate when trained on different subsets of the data.
 
-```{admonition} Reminder: Types of Errors
-:class: note
+```{note} Reminder: Types of Errors
 
 - The *irreducible error* is inherent in the data due to noise and factors beyond our control (unmeasured variables).
 
@@ -28,9 +20,9 @@ The fundamental question in statistical learning is how well $\hat{f}$​ will p
   - *Variance*: The sensitivity of the model to small changes in the training data (overfitting)
 ```
 
-This closely relates to the example introduced in [](0_refresher). Let's have a another look and simulate some data with an underlying relationship in line with a cubic polynomial function. We can see that a linear regression does not capture the nuance of the cubic relationship in the data, while a 10th order model already overfits quite a lot:
+This closely relates to the example introduced in [](0_refresher.md). Let's have a another look and simulate some data with an underlying relationship in line with a cubic polynomial function. We can see that a linear regression does not capture the nuance of the cubic relationship in the data, while a 10th order model already overfits quite a lot:
 
-```{code-block} ipython3
+```python
 import numpy as np
 
 x = np.linspace(-3, 3, 30)
@@ -69,8 +61,7 @@ plt.tight_layout()
 If we look at the mean squared error (MSE), which we here use as a measure for the *bias*, we can see that it decreases with increasing model flexibility:
 
 
-```{admonition} Reminder: MSE
-:class: dropdown
+```{dropdown} Reminder: MSE
 
 $$\text{MSE} = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2$$
 
@@ -159,8 +150,7 @@ print(f"10      {mses[2]:.3f}")
 
 Please compare the previous plots and outputs. What do you notice?
 
-```{admonition} Show answer
-:class: dropdown
+```{dropdown} Show answer
 Two things should become apparent:
 
 1. In contrary to the training MSE, which decreases with the order of the model, the test MSE is lowest for the 3rd order model.
@@ -205,8 +195,7 @@ Eventually, the reduction in bias is no longer sufficient to counterbalance the 
 
 <br>
 
-```{admonition} Summary
-:class: tip
+```{tip} Summary
 
 Our goal is to minimize the reducible error by finding an optimal balance between bias and variance. Only then do we have a model that not only performs well on the training data but also generalizes effectively to new, unseen data.
 ```

@@ -145,16 +145,10 @@ from jupytercards import display_flashcards
 display_flashcards('quiz/flashcard.json')
 ```
 
-- We can even open a Python IDE:
-
-```{code-cell}
-from IPython.display import IFrame
-IFrame('https://trinket.io/embed/python3/3fe4c8f3f4', 700, 500)
-```
-
-- Or within text with a different layout and pre-defined code:
-
-<iframe src="https://trinket.io/embed/python3/09d06157a6" width="100%" height="600" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+- Embedded trinket.io editors were removed from this book. They steal keyboard focus
+  when they load, which scrolls the reader down to the widget every time the page opens,
+  and MyST strips the `loading="lazy"` / `tabindex="-1"` attributes that would fix it.
+  Use a normal executable `{code-cell}` instead.
 
 - You can embed YouTube videos:
 

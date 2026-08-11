@@ -1,18 +1,28 @@
-jupyter-book==1.0.3
+# Build toolchain (Jupyter Book 2 is powered by mystmd)
+jupyter-book>=2.1.6
+jupyter-server          # needed by `jupyter book build --execute`
+ipykernel
+
+# Scientific stack used by the chapters
 numpy
 pandas
 scipy
 matplotlib
 seaborn
 plotly
-nilearn
 scikit-learn
-jupytercards
-jupyterquiz
 statsmodels
 mlxtend
 patsy
-ipywidgets
-ISLP
 xgboost
-#tensorflow # remove to save workflow space, students can install it manually for the neural network chapter
+
+# Interactive teaching widgets
+jupytercards
+jupyterquiz
+
+# Datasets used in the chapters and the exercises
+ISLP
+nilearn
+
+# tensorflow is intentionally NOT installed here: it would blow past the CI
+# disk budget. Students install it manually for the neural network chapter.
