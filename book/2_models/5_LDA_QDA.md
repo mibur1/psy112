@@ -1,29 +1,18 @@
 ---
-jupytext:
-  formats: md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.11.5
+short_title: LDA & QDA
 kernelspec:
-  display_name: Python 3
-  language: python
   name: python3
-myst:
-  substitutions:
-    ref_test: 1
+  display_name: Python 3
 ---
 
-# <i class="fa-solid fa-divide"></i> LDA & QDA
+# ➗ LDA & QDA
 
 
 If we briefly recap the previously introduced classification algorithms, logistic regression and k-nearest neighbors are referred to as **discriminative models**. This means they try to establish a decision boundary (discriminator), which best separate the classes. 
 
 In contrast, **generative models** such as Linear Discriminant Analysis (LDA) and Quadratic Discriminant Analysis (QDA) (and also Naïve Bayes, which will be introduced in the next session) see the world with different eyes! They are focused on learning the *underlying distribution* of the data and its labels.
 
-```{admonition} Generative models
-:class: tip
+```{tip} Generative models
 
 - Learn the distribution of features for each class, not just how to separate them
 - Use this information to calculate the likelihood of new data belonging to each class
@@ -134,8 +123,7 @@ where:
 - The determinant term $|\Sigma_k|$ is present because the spread varies between classes 
 
 
-```{admonition} Choosing Between LDA and QDA
-:class: tip
+```{tip} Choosing Between LDA and QDA
 
 - **LDA** is ideal when you assume the classes share a similar spread in the feature space
 - **QDA** is more appropriate when the spread differs significantly across classes and non-linear boundaries are expected
@@ -233,7 +221,7 @@ legend_elements = [
            markeredgewidth=0, label='Class 1', markersize=8),
     Line2D([], [], color='black', linestyle='-', linewidth=2, label='Decision boundary')
 ]
-ax[1].legend(handles=legend_elements)
+ax[1].legend(handles=legend_elements, loc="upper left")  # explicit loc: "best" is slow on a dense mesh
 plt.show()
 ```
 

@@ -1,21 +1,11 @@
 ---
-jupytext:
-  formats: md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.11.5
+short_title: Decision trees
 kernelspec:
-  display_name: Python 3
-  language: python
   name: python3
-myst:
-  substitutions:
-    ref_test: 1
+  display_name: Python 3
 ---
 
-# <i class="fa-solid fa-tree"></i> Decision Trees
+# 🌳 Decision Trees
 
 Decision Trees are powerful and intuitive models used for both classification and regression problems. They work by recursively partitioning the feature space into smaller regions and assigning a prediction to each one. The tree structure is easy to interpret and visualise, making it a popular choice for understanding the relationship between inputs and outputs.
 
@@ -67,8 +57,7 @@ $$
 
 The algorithm tries every feature and every possible threshold, picks the split with the largest gain, and recurses. This is greedy, which means it only looks one step ahead, but it works remarkably well in practice.
 
-````{admonition} Worked example
-:class: tip
+````{tip} Worked example
 
 Suppose a node contains 10 samples: 6 from class A and 4 from class B.
 
@@ -103,11 +92,12 @@ where $\bar{y}$ is the mean response in the node. Choosing a split that minimise
 
 The general usage of regression trees is identical to previous regression models:
 
-```{code-block} python
+```python
 from sklearn.tree import DecisionTreeRegressor
 
 model = DecisionTreeRegressor()
-model.fit()
+model.fit(X_train, y_train)
+model.predict(X_test)
 ```
 
 As you learned in the lecture, there are a few additional parameters which we can choose, such as *stopping criteria* (when to stop splitting). You can look these up in the [documentation](https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeRegressor.html). To see how these models perform, we can simply plot the predictions for two different models on synthetic data.
@@ -221,10 +211,7 @@ The tree plot of the fitted model contains the following information:
 Another nice illustration is plotting the decision boundaries. As this works mostly with 2 features, we plot pairwise feature combinations:
 
 ```{code-cell} ipython3
----
-tags:
-  - hide-input
----
+:tags: [hide-input]
 import numpy as np
 from sklearn.inspection import DecisionBoundaryDisplay
 
@@ -461,8 +448,7 @@ pd.DataFrame(results, columns=["Model", "Test accuracy"])
 
 ## Summary
 
-```{admonition} Summary
-:class: note 
+```{note} Summary
 
 | Method            | Description                                      | Pros                                | Cons                                                  |
 |-------------------|--------------------------------------------------|-------------------------------------|-------------------------------------------------------|

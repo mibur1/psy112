@@ -1,21 +1,11 @@
 ---
-jupytext:
-  formats: md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.11.5
+short_title: Naïve Bayes
 kernelspec:
-  display_name: Python 3
-  language: python
   name: python3
-myst:
-  substitutions:
-    ref_test: 1
+  display_name: Python 3
 ---
 
-# <i class="fa-solid fa-lightbulb"></i> Naïve Bayes
+# 💡 Naïve Bayes
 
 Naïve Bayes classifiers, like LDA and QDA, are generative models. They aim to model how the data was generated for each class and use this knowledge to make predictions. The foundation of Naïve Bayes is Bayes’ Theorem.
 
@@ -193,13 +183,12 @@ $$
 ### Quiz
 
 ```{code-cell} ipython3
-:tags: ["remove-input"]
+:tags: [remove-input]
 from jupyterquiz import display_quiz
 display_quiz("quiz/NaiveBayes.json", shuffle_answers=True)
 ```
 
-```{admonition} Solution
-:class: dropdown
+```{dropdown} Solution
 
 To solve this, we use the same priors and likelihoods as before, but change the feature values:
 
@@ -323,7 +312,7 @@ legend_elements = [
            markeredgewidth=0, label='Class 1', markersize=8),
     Line2D([], [], color='black', linestyle='-', linewidth=2, label='Decision boundary')
 ]
-ax.legend(handles=legend_elements);
+ax.legend(handles=legend_elements, loc="upper left");  # explicit loc: "best" is slow on a dense mesh
 ```
 
 This plot visualises how the Gaussian Naïve Bayes model estimates the class distributions:
@@ -345,4 +334,4 @@ This plot visualises how the Gaussian Naïve Bayes model estimates the class dis
 | **Decision boundary**              | Linear                         | Quadratic                               | Quadratic (for Gaussian NB)                           |
 | **When to use**                    | Classes share a similar spread | Classes have clearly different spreads  | Many features, text/categorical data, quick baseline  |
 
-That's it! You can now head to [Exercise 6](Exercises) to apply LDA, QDA, and Naïve Bayes yourself 😄
+That's it! You can now head to [Exercise 6](Exercises.ipynb) to apply LDA, QDA, and Naïve Bayes yourself 😄

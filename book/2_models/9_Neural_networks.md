@@ -1,25 +1,15 @@
 ---
-jupytext:
-  formats: md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.11.5
+short_title: Neural networks
 kernelspec:
-  display_name: Python 3
-  language: python
   name: python3
-myst:
-  substitutions:
-    ref_test: 1
+  display_name: Python 3
 ---
 
-# <i class="fa-solid fa-brain"></i> Neural Networks
+# 🧠 Neural Networks
 
 Neural networks are arrangements of very simple units called **perceptrons**. 
 
-Perceptrons are very simplified models of neurons. They take one or more inputs, apply weights and a bias, and then then pass the result through an activation function to produce an output.
+Perceptrons are very simplified models of neurons. They take one or more inputs, apply weights and a bias, and then pass the result through an activation function to produce an output.
 
 ```{figure} figures/perceptron.png
 :name: Perceptron
@@ -32,7 +22,7 @@ The Perceptron: weighted sum of inputs, plus bias, followed by an activation fun
 
 ## Linear Perceptron as Regression
 
-If you look closely at the figure above, you can see that if we use an identity activation function $f(x) = z$ (leaving the input untouched), then the perceptron computes
+If you look closely at the figure above, you can see that if we use an identity activation function $f(z) = z$ (leaving the input untouched), then the perceptron computes
 
 $$y = f(w^\top x + b) = w^\top x + b$$
 
@@ -47,7 +37,7 @@ from matplotlib import pyplot as plt
 np.random.seed(42)
 
 noise = np.random.randn(100) * 0.2
-x = np.random.uniform(-1, 1, size=100) # 100 valies between -1 and 1
+x = np.random.uniform(-1, 1, size=100) # 100 values between -1 and 1
 y = 2*x + noise + 1 # slope: 2, intercept: 1
 
 fig, ax = plt.subplots()
@@ -125,10 +115,7 @@ Some of the most widely used activation functions and their applications are:
 
 
 ```{code-cell} ipython3
----
-tags:
-  - hide-input
----
+:tags: [hide-input]
 z = np.linspace(-5, 5, 500)
 
 # Compute activations
@@ -174,7 +161,7 @@ where $l$ indexes the layers and $\mathbf{a}^{(0)}=\mathbf{x}$.
 
 ### Training with Backpropagation
 
-We will not dive into de details of backpropagation here. If you are interested, there are near infinite materials available online (e.g., [mlu explain](https://mlu-explain.github.io/neural-networks/) for a visual exploration or this [medium article](https://medium.com/analytics-vidhya/backpropagation-for-dummies-e069410fa585) for a more mathematical explanation).
+We will not dive into the details of backpropagation here. If you are interested, there are near infinite materials available online (e.g., [mlu explain](https://mlu-explain.github.io/neural-networks/) for a visual exploration or this [medium article](https://medium.com/analytics-vidhya/backpropagation-for-dummies-e069410fa585) for a more mathematical explanation).
 
 In short, training works in the following way:
 

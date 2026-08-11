@@ -1,27 +1,17 @@
 ---
-jupytext:
-  formats: md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.11.5
+short_title: KNN
 kernelspec:
-  display_name: Python 3
-  language: python
   name: python3
-myst:
-  substitutions:
-    ref_test: 1
+  display_name: Python 3
 ---
 
-# <i class="fa-solid fa-arrows-to-dot"></i> K-Nearest Neighbors
+# 🎯 K-Nearest Neighbors
 
 The k-Nearest Neighbours (kNN) algorithm is one of the simplest and most intuitive methods for classification and regression tasks. It is a non-parametric, instance-based learning algorithm, which means it makes predictions based on the similarity of new instances to previously encountered data points, without assuming any specific distribution for the underlying data. The idea behind kNN is straightforward: to classify a new data point, the algorithm finds the k closest points in the training set (its 'neighbours') and assigns the most common class among those neighbours to the new instance. In the case of regression, the prediction is the average of the values of its nearest neighbours.
 
-We often evaluate kNN classification using the  error rate the (proportion of misclassified observations). Here, the choice of $k$ is crucial for the algorithm's performance. A small $k$ (e.g., $k=1$) makes the classifier sensitive to noise, while a large $k$ may smooth out boundaries too much, leading to underfitting. Typically, $k$ is chosen through cross-validation to optimise predictive accuracy. 
+We often evaluate kNN classification using the error rate (the proportion of misclassified observations). Here, the choice of $k$ is crucial for the algorithm's performance. A small $k$ (e.g., $k=1$) makes the classifier sensitive to noise, while a large $k$ may smooth out boundaries too much, leading to underfitting. Typically, $k$ is chosen through cross-validation to optimise predictive accuracy. 
 
-Have a look at the folloqing plot, which illustrates the conceptwith two clearly defined classes. The blue dot in the center represents a new datapoint, which we wish to classify depending on other data points, which are already labeled (Class A and B). To determine its class, we calculate the distance from this point to every point in both Class A and Class B. The dashed circle around the new example marks the radius up to the fifth-nearest neighbour, demonstrating the boundary within which the algorithm searches for its neighbours.
+Have a look at the following plot, which illustrates the concept with two clearly defined classes. The blue dot in the center represents a new datapoint, which we wish to classify depending on other data points, which are already labeled (Class A and B). To determine its class, we calculate the distance from this point to every point in both Class A and Class B. The dashed circle around the new example marks the radius up to the fifth-nearest neighbour, demonstrating the boundary within which the algorithm searches for its neighbours.
 
 
 ```{code-cell} ipython3
@@ -190,11 +180,14 @@ print(f"Accuracy: {best_accuracy:.2f}")
 Let's visualise the decision boundary:
 
 ```{code-cell} ipython3
+from matplotlib.colors import ListedColormap
+
 # Create a DataFrame with the scaled features and the target
 df_scaled = pd.DataFrame(X_scaled, columns=["sepal length (cm)", "sepal width (cm)"])
 df_scaled['class'] = df['class']
 
-# Fit the KNN classifier
+# Fit the KNN classifier. We use the integer codes here (not the class names)
+# so that the predictions can be drawn as a filled contour below.
 knn = KNeighborsClassifier(n_neighbors=best_k)
 knn.fit(X_scaled, df['target'])
 
@@ -208,19 +201,19 @@ Z = knn.predict(np.c_[xx.ravel(), yy.ravel()]).reshape(xx.shape)
 
 # Plot
 fig, ax = plt.subplots()
-ax.contourf(xx, yy, Z, alpha=0.3, cmap="Set2")
+cmap = ListedColormap(sns.color_palette("Set2", 3))  # same 3 colours as the points
+ax.contourf(xx, yy, Z, alpha=0.3, cmap=cmap)
 sns.scatterplot(data=df_scaled, x="sepal length (cm)", y="sepal width (cm)", hue="class", palette='Set2', ax=ax)
 ax.set(xlabel=df_scaled.columns[0], ylabel=df_scaled.columns[1], title=f"Decision Boundary with k = {best_k}");
 ```
 
 ```{code-cell} ipython3
-:tags: ["remove-input"]
+:tags: [remove-input]
 from jupyterquiz import display_quiz
 display_quiz("quiz/KNN.json", shuffle_answers=True)
 ```
 
-```{admonition} The choice of k
-:class: note 
+```{note} The choice of k
 
 In datasets where class boundaries are clear and the data is clean, a higher $k$ can be beneficial. It provides a form of regularization by averaging over many neighbors. In contrast, for more complex or noisy datasets, a high $k$ could oversimplify the structure and reduce model performance.
 ```

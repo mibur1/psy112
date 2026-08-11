@@ -1,21 +1,11 @@
 ---
-jupytext:
-  formats: md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.11.5
+short_title: Regularization
 kernelspec:
-  display_name: Python 3
-  language: python
   name: python3
-myst:
-  substitutions:
-    lambda: 1
+  display_name: Python 3
 ---
 
-# <i class="fa-solid fa-puzzle-piece"></i> Regularization
+# 🧩 Regularization
 
 Building on subset selection, an alternative approach is to include all *p* predictors in the model but apply regularization—shrinking the **coefficient estimates toward zero** relative to the least squares estimates. This reduces model complexity without fully discarding variables. Though it introduces some bias, it often lowers variance and improves test performance. 
 
@@ -84,13 +74,12 @@ Combined:
 - $L(\boldsymbol\beta)=\sum_{i=1}^{n}\bigl(y_i - \mathbf X_i\,\boldsymbol\beta\bigr)^2$ is the **residual sum of squares (RSS)**
 - $\lambda\sum_{j=1}^{p} \beta_j^2$ is the **L2 penalty** on the coefficients 
 
-```{admonition} The λ parameter
-:class: note 
+```{note} The λ parameter
 
-λ controls the regulariztation strength:
+λ controls the regularization strength:
 
 - λ = 0: The penalty term has no effect (normal OLS regression)
-- λ > 0: The impact of the penalty increases proportinal to λ
+- λ > 0: The impact of the penalty increases proportional to λ
 
 Lambda is a hyperparameter which we need to chose ourselves (through e.g. cross validation). 
 ```
@@ -340,4 +329,4 @@ plt.tight_layout()
 plt.show()
 ```
 
-**Now it's your turn:** Head to the [exercise section](Exercises) for Exercise 2, in which you will implement a Lasso model.
+**Now it's your turn:** Head to the [exercise section](Exercises.ipynb) for Exercise 2, in which you will implement a Lasso model.

@@ -1,0 +1,95 @@
+# Jupyter Book 2 configuration
+# Reference: https://mystmd.org/guide/frontmatter
+version: 1
+
+project:
+  id: psy112-statistical-learning
+  title: Statistical Learning with Python
+  description: >-
+    Course materials for the psy112 seminar of the Neurocognitive Psychology
+    Master's programme at Carl von Ossietzky Universität Oldenburg.
+  copyright: "2026"
+  authors:
+    - name: Micha Burkhardt
+      affiliation: Carl von Ossietzky Universität Oldenburg
+    - name: Constanze Buschmann
+      affiliation: Carl von Ossietzky Universität Oldenburg
+  github: https://github.com/mibur1/psy112
+
+  # Enables the "launch in Jupyter" menu on notebook pages
+  jupyter: true
+
+  # Not part of the book: a syntax scratch-pad, plus a bibliography page whose
+  # .bib file is empty and which nothing cites (neither was in the old _toc.yml).
+  exclude:
+    - book/misc/templates.md
+    - book/misc/references.md
+    - README.md
+    - CHANGELOG.md
+
+  # Hover definitions for recurring acronyms
+  abbreviations:
+    CV: Cross-Validation
+    LOOCV: Leave-One-Out Cross-Validation
+    MSE: Mean Squared Error
+    RMSE: Root Mean Squared Error
+    RSS: Residual Sum of Squares
+    OLS: Ordinary Least Squares
+    OOB: Out-Of-Bag
+    PCA: Principal Component Analysis
+    LDA: Linear Discriminant Analysis
+    QDA: Quadratic Discriminant Analysis
+    GAM: Generalized Additive Model
+    KNN: K-Nearest Neighbours
+    SVM: Support Vector Machine
+    SVC: Support Vector Classifier
+    RBF: Radial Basis Function
+    MLP: Multi-Layer Perceptron
+    ReLU: Rectified Linear Unit
+    SGD: Stochastic Gradient Descent
+
+  toc:
+    - file: book/introduction.md
+
+    - title: Machine Learning Basics
+      children:
+        - file: book/1_basics/0_refresher.md
+        - file: book/1_basics/1_introduction.md
+        - file: book/1_basics/2_bias_variance.md
+        - file: book/1_basics/3_resampling.md
+        - file: book/1_basics/Exercises.ipynb
+
+    - title: Modelling
+      children:
+        - file: book/2_models/1_Model_selection.md
+        - file: book/2_models/2_Regularization.md
+        - file: book/2_models/3_GAM.md
+        - file: book/2_models/4_KNN.md
+        - file: book/2_models/5_LDA_QDA.md
+        - file: book/2_models/6_Naive_bayes.md
+        - file: book/2_models/7_SVM.md
+        - file: book/2_models/8_Trees.md
+        - file: book/2_models/9_Neural_networks.md
+        - file: book/2_models/10_PCA.md
+        - file: book/2_models/Exercises.ipynb
+
+    - title: Additional Materials
+      children:
+        - file: book/solutions/solutions.md
+          children:
+            - file: book/solutions/solutions_1.ipynb
+            - file: book/solutions/solutions_2.ipynb
+
+site:
+  template: book-theme
+  title: Statistical Learning with Python
+  options:
+    logo: logo.png
+    logo_dark: logo.png
+    favicon: logo.png
+    style: _static/custom.css
+    # Keep the folder structure in the URLs. Required here because both
+    # chapter folders contain a file called "Exercises".
+    folders: true
+    outline_maxdepth: 3
+    hide_authors: true

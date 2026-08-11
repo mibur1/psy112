@@ -1,40 +1,21 @@
 ---
-jupytext:
-  formats: md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.11.5
+short_title: Regression recap
 kernelspec:
-  display_name: Python 3
-  language: python
   name: python3
-myst:
-  substitutions:
-    training_data: 1
-    testing_data: 2
-    overfit: 3
-    occam: 4
+  display_name: Python 3
 ---
 
-# <i class="fa-solid fa-repeat"></i> Recap: Regression Models
+# 🔁 Recap: Regression Models
 
 ```{code-cell} ipython3
 :tags: [remove-input]
-from IPython.display import HTML
-import plotly.io as pio
-
-# Helper function to return a Plotly figure as self-contained HTML.
-def show_plotly(fig, include_js='cdn'):
-    return HTML(pio.to_html(fig, full_html=False, include_plotlyjs=include_js))
 ```
 
 One of the the most important concepts in any multivariate statistics seminar such as [psy111](https://mibur1.github.io/psy111) are (linear) regression models. Let's quickly recap this concept and how to implement it in Python.
 
 Have a look at the following code, which creates some simulated data. Can you deduce from the code, what the underlying pattern is?
 
-```{code-block} ipython3
+```python
 import numpy as np
 import pandas as pd
 
@@ -43,8 +24,7 @@ y = (x**3 + np.random.normal(0, 15, size=x.shape)) / 50
 
 df = pd.DataFrame({'x': x, 'y': y})
 ```
-<details>
-<summary><strong>Click to reveal the plot</strong></summary>
+:::{dropdown} Click to reveal the plot
 
 Here you can see the data in a scatterplot, with a linear regression model fitted to the data. Do you think the linear model fits the data well?
 
@@ -56,7 +36,11 @@ import numpy as np
 import pandas as pd
 
 import warnings
-warnings.filterwarnings("ignore", message=".*Polyfit may be poorly conditioned.*")
+try:
+    RankWarning = np.exceptions.RankWarning   # numpy >= 1.25
+except AttributeError:
+    RankWarning = np.RankWarning              # numpy < 1.25
+warnings.filterwarnings("ignore", category=RankWarning)
 
 # Generate sample data
 np.random.seed(42)
@@ -102,9 +86,9 @@ layout = go.Layout(
     margin=dict(l=10, r=10, t=30, b=20),
 )
 fig = go.Figure(data=[scatter, regression], layout=layout)
-show_plotly(fig, include_js='cdn')
+fig
 ```
-</details>
+:::
 <br>
 
 Let's take a closer look at the model. As introduced last semester, we can e.g. use the `statsmodels.formula.api` library to specify and fit regression models with a formula notation similar to R. We use the `ols()` class to fit the model specified as `y ~ x` which translates to "y predicted by x":
@@ -117,7 +101,7 @@ print(model.summary())
 ```
 
 In this output, the most important information are the model parameters displayed under `coef` and the performance statistics such as the `R-squared`.
-You can see that our model has an R-squared of 0.753, which means that the model explains 75% of the variance in the data. That's pretty good! But I'm sure we can do better. After all, life is more complicated than just a straigth line, no? <sub>(And we also know that the underlying data was simulated according to a 3rd order polynomial.)</sub>
+You can see that our model has an R-squared of 0.753, which means that the model explains 75% of the variance in the data. That's pretty good! But I'm sure we can do better. After all, life is more complicated than just a straight line, no? <sub>(And we also know that the underlying data was simulated according to a 3rd order polynomial.)</sub>
 
 ```{code-cell} ipython3
 :tags: [remove-input]
@@ -175,20 +159,12 @@ layout = go.Layout(
 
 # Create the figure
 fig = go.Figure(data=[scatter] + regression_traces, layout=layout)
-show_plotly(fig, include_js='cdn')
+fig
 ```
 
 As you probably expected, the R² increases as you increase the order of the polynomial in the regression model. However, this doesn't stop after the 3rd order polynomial (which is the true function that generated the data). The R² continues to increase until it hits 1 for a model that includes a 29th-order polynomial. You can see that the model now goes through every single one of the data points. This did not happen by chance! A polynomial of degree 29 can perfectly interpolate the present data, which consists of 30 data points. This is because a polynomial of degree n−1 has n coefficients, which can be uniquely determined to pass through n distinct points (given that all the x-values are distinct).
 
-```{margin}
-{{training_data}}\. Training data refers to the data which was used for model fitting.
-```
-
-```{margin}
-{{testing_data}}\. Testing data refers to data which was used to evaluate the performance of a model. This is new, unseen data, meaning that it was not used for training.
-```
-
-But what should you do with this information? Well, as the topic of this seminar is *statistical and machine learning*, we are usually concerned with making predictions for new, unseen data. Until now, we have always fit (trained) and evaluated (tested) our model on the same data, aiming to make statistical inferences about the coefficients of relatively small models. We can call this the *training data*<sup>{{training_data}}</sup>. However, we can also generate new data with the same underlying function and test the model on this repeatedly generated data that reflects the same underlying true association between y and x. We call this the *testing data*<sup>{{testing_data}}</sup>:
+But what should you do with this information? Well, as the topic of this seminar is *statistical and machine learning*, we are usually concerned with making predictions for new, unseen data. Until now, we have always fit (trained) and evaluated (tested) our model on the same data, aiming to make statistical inferences about the coefficients of relatively small models. We can call this the *training data*[^training]. However, we can also generate new data with the same underlying function and test the model on this repeatedly generated data that reflects the same underlying true association between y and x. We call this the *testing data*[^testing]:
 
 ```{code-cell} ipython3
 :tags: [remove-input]
@@ -278,32 +254,24 @@ layout_test = go.Layout(
 )
 
 fig_test = go.Figure(data=[test_scatter] + regression_traces_test, layout=layout_test)
-show_plotly(fig_test, include_js='cdn')
+fig_test
 ```
 
-```{margin}
-{{overfit}}\. Overfitting refers to fitting patterns in the training data which do not generalize to the testing data.
-```
-
+:::{margin}
 <a href="https://commons.wikimedia.org/wiki/File:William_of_Ockham.png" target="_blank">
-  <figure style="float:right; width:17%; margin-bottom:0.5em; margin-left:1.5em;">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/7/70/William_of_Ockham.png" alt="William Occam" style="width:100%;">
-    <figcaption style="margin-top:0.2em; font-size:small;">William of Occam <sup>4</sup></figcaption>
-  </figure>
+<img src="https://upload.wikimedia.org/wikipedia/commons/7/70/William_of_Ockham.png" alt="William of Occam" style="width:100%;">
 </a>
-<br>
 
-You can see that the R² now has a peak around a 3rd order polynomial regression model and then drastically decreases for higher order polynomials. This means that our previously trained models do not really fit our new data anymore. Why is this the case? Basically, these higher-order models became too flexible and *overfit* <sup>{{overfit}}</sup> to the training data. Once we apply the models to new testing data, they will produce a much worse performance, as they are too specialized (they basically just memorized the training data).
+William of Occam. Image by [Moscarlop](https://commons.wikimedia.org/wiki/File:William_of_Ockham.png), used under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+:::
 
-```{margin}
-{{occam}}\. Image by <a href="https://commons.wikimedia.org/wiki/File:William_of_Ockham.png">Moscarlop</a>, used under <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>.
-```
+You can see that the R² now has a peak around a 3rd order polynomial regression model and then drastically decreases for higher order polynomials. This means that our previously trained models do not really fit our new data anymore. Why is this the case? Basically, these higher-order models became too flexible and *overfit* [^overfit] to the training data. Once we apply the models to new testing data, they will produce a much worse performance, as they are too specialized (they basically just memorized the training data).
 
 So how can we then find the best model that avoids overfitting? From your classes in basic (psychological) methods, you might be familiar with *Occam's razor*, which states that:
 
 > Entia non sunt multiplicanda praeter necessitatem.
 
-This essentially translates to *"Before you try a complicated hypothesis, you should make quite sure that no simplification of it will explain the facts equally well"*. Our model should thus be as simple as possible, but as complex as necessary. In machine learning, this concept is often referred to as the [](2_bias_variance), which we will explore next week.
+This essentially translates to *"Before you try a complicated hypothesis, you should make quite sure that no simplification of it will explain the facts equally well"*. Our model should thus be as simple as possible, but as complex as necessary. In machine learning, this concept is often referred to as the [bias-variance tradeoff](2_bias_variance.md), which we will explore next week.
 
 ## Different Ways of Implementing Regression Models
 
@@ -353,7 +321,7 @@ print(model.params) # [beta0, beta1, beta2, beta3]
 ```
 
 ```{code-cell} ipython3
-# Prediciton
+# Prediction
 x_test = np.array([[-4], [1], [3]])
 X_test_poly = poly.transform(x_test)
 y_hat = model.predict(X_test_poly)
@@ -399,11 +367,14 @@ plt.legend();
 
 In practice, `statsmodels` is ideal for statistical analysis and reporting (provides a lot of information for inference), `scikit-learn` for machine learning pipelines and prediction, and `numpy` for quick or lightweight fits.
 
-```{admonition} Summary
-:class: tip
+```{tip} Summary
 
 - Regression models can be used as prediction models in the context of machine learning.
 - The performance of a prediction model should always be assessed on new, unseen data.
 - It is often useful to look for the simplest possible model that still provides sufficiently accurate answers.
 - There are many Python packages that allow you to implement regression models. Chose whichever suits your goals best.
 ```
+
+[^training]: Training data refers to the data which was used for model fitting.
+[^testing]: Testing data refers to data which was used to evaluate the performance of a model. This is new, unseen data, meaning that it was not used for training.
+[^overfit]: Overfitting refers to fitting patterns in the training data which do not generalize to the testing data.
