@@ -19,11 +19,12 @@ project:
   # Enables the "launch in Jupyter" menu on notebook pages
   jupyter: true
 
-  # Not part of the book: a syntax scratch-pad, plus a bibliography page whose
-  # .bib file is empty and which nothing cites (neither was in the old _toc.yml).
+  bibliography:
+    - book/misc/references.bib
+
+  # Not part of the book: a syntax scratch-pad that was never in the old _toc.yml.
   exclude:
     - book/misc/templates.md
-    - book/misc/references.md
     - README.md
     - CHANGELOG.md
 
