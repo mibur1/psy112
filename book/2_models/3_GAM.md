@@ -20,7 +20,7 @@ $$ y = b_0 + f_1(x_1) + f_2(x_2) + ... + f_i(x_i) + \epsilon $$
 
 In short, instead of using fixed slope coefficients $b_i$​ that assume a straight-line relationship, we replace them with flexible (possibly non-linear) smooth functions $f_i$​ for each predictor. These functions can be anything from constant functions and polynomials to wavelets.
 
-So in comparison to simple splines regression which ([last semester](https://mibur1.github.io/psy111/book/statistics/spline-reg/introduction)) was introduced to predict $y$ on the basis of a single predictor $x$, GAMs are a generalization which allows us to predict $y$ given multiple predictors $x_1 ... x_p$.
+So in comparison to simple splines regression which ([last semester](https://michaburkhardt.de/psy111/book/statistics/spline-reg/introduction)) was introduced to predict $y$ on the basis of a single predictor $x$, GAMs are a generalization which allows us to predict $y$ given multiple predictors $x_1 ... x_p$.
 
 
 ```{code-cell} ipython3
